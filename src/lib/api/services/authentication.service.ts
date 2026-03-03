@@ -1,0 +1,38 @@
+import { apiClient } from '../client';
+import type * as Types from '@/types/api.types';
+
+export const authenticationService = {
+  async authentication(data: any): Promise<any> {
+    return apiClient.post(`/api/Authentication/register`, data);
+  },
+  async authentication2(data: any): Promise<any> {
+    return apiClient.post(`/api/Authentication/login`, data);
+  },
+  async authentication3(data: any): Promise<any> {
+    return apiClient.post(`/api/Authentication/verify-2fa`, data);
+  },
+  async authentication4(data: any): Promise<any> {
+    return apiClient.post(`/api/Authentication/forgot-password`, data);
+  },
+  async authentication5(data: any): Promise<any> {
+    return apiClient.post(`/api/Authentication/reset-password`, data);
+  },
+  async authentication6(data: any): Promise<any> {
+    return apiClient.post(`/api/Authentication/refresh-token`, data);
+  },
+  async authentication7(): Promise<any> {
+    return apiClient.post(`/api/Authentication/logout`, data);
+  },
+  async authentication8(data: any): Promise<any> {
+    return apiClient.post(`/api/Authentication/revoke-token`, data);
+  },
+  async authentication9(data: any): Promise<any> {
+    return apiClient.post(`/api/Authentication/enable-2fa`, data);
+  },
+  async authenticationall(params?: Record<string, any>): Promise<any> {
+    return apiClient.get(`/api/Authentication/audit-logs`, params || {});
+  },
+  async authenticationall2(userId: string, params?: Record<string, any>): Promise<any> {
+    return apiClient.get(`/api/Authentication/audit-logs/user/${userId}`, params || {});
+  },
+};
