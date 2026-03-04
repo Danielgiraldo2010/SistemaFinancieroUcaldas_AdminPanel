@@ -33,10 +33,15 @@ export const authenticationService = {
   async authentication6(data: Record<string, any>): Promise<any> {
     return apiClient.post(`/api/Authentication/refresh-token`, data);
   },
+<<<<<<< HEAD
 
   // Corregido: recibe 'data' y retorna 'any'
   async authentication7(data?: Record<string, any>): Promise<any> {
     return apiClient.post(`/api/Authentication/logout`, data || {});
+=======
+  async authentication7(): Promise<any> {
+    return apiClient.post(`/api/Authentication/logout`);
+>>>>>>> c3e0505f48b11de6bc0f93021ff3560f81e061a0
   },
 
   async authentication8(data: Record<string, any>): Promise<any> {
