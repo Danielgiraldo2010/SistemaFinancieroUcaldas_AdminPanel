@@ -1,8 +1,13 @@
 'use client';
 import { useAuthStore } from '@/lib/auth/store';
+import { useEffect } from 'react';
 
 export default function ProfilePage() {
   const { user } = useAuthStore();
+
+  useEffect(() => {
+    console.log('User data:', user);
+  }, [user]);
 
   return (
     <div>
@@ -21,8 +26,12 @@ export default function ProfilePage() {
             color: 'white',
             marginBottom: '16px',
           }}>
-            👤
+            {user?.userName?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || '👤'}
           </div>
+          <h2 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '4px' }}>
+            {user?.userName || user?.name || user?.email?.split('@')[0] || 'Usuario'}
+          </h2>
+          <p style={{ color: '#6b7280', fontSize: '14px' }}>{user?.email || 'No disponible'}</p>
         </div>
 
         <div style={{ display: 'grid', gap: '16px' }}>
@@ -40,7 +49,7 @@ export default function ProfilePage() {
               Nombre de usuario
             </label>
             <div style={{ padding: '10px', backgroundColor: '#f9fafb', borderRadius: '8px' }}>
-              {user?.userName || 'No disponible'}
+              {user?.userName || user?.name || 'No disponible'}
             </div>
           </div>
 
@@ -49,7 +58,7 @@ export default function ProfilePage() {
               Teléfono
             </label>
             <div style={{ padding: '10px', backgroundColor: '#f9fafb', borderRadius: '8px' }}>
-              {user?.phoneNumber || 'No disponible'}
+              {user?.phoneNumber || user?.phone || 'No disponible'}
             </div>
           </div>
 

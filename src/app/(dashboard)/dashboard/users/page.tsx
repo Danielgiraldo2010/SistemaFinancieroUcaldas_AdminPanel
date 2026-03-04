@@ -37,14 +37,15 @@ export default function UsersPage() {
         </button>
       </div>
 
+      {message && (
+        <div style={{ padding: '12px', marginBottom: '16px', borderRadius: '8px', backgroundColor: message.includes('Error') ? '#fee2e2' : '#f0fdf4', color: message.includes('Error') ? '#991b1b' : '#166534' }}>
+          {message}
+        </div>
+      )}
+
       {showForm && (
         <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
           <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>Crear Nuevo Usuario</h2>
-          {message && (
-            <div style={{ padding: '12px', marginBottom: '16px', borderRadius: '8px', backgroundColor: message.includes('Error') ? '#fee2e2' : '#f0fdf4', color: message.includes('Error') ? '#991b1b' : '#166534' }}>
-              {message}
-            </div>
-          )}
           <form onSubmit={handleCreate}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
               <div>
