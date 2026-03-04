@@ -1,13 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { apiClient } from "../client";
-import type * as Types from "@/types/api.types";
 
 /**
- * Solución final:
- * Se usa 'Record<string, any>' para los parámetros y 'Promise<any>' para las respuestas.
- * Para evitar el error de ESLint, desactivamos la regla específicamente para este archivo.
+ * Servicio de Autenticación - Sistema Financiero Ucaldas
+ * Se utiliza 'any' para compatibilidad con la estructura dinámica del API.
  */
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export const authenticationService = {
   async authentication(data: Record<string, any>): Promise<any> {
@@ -33,15 +30,9 @@ export const authenticationService = {
   async authentication6(data: Record<string, any>): Promise<any> {
     return apiClient.post(`/api/Authentication/refresh-token`, data);
   },
-<<<<<<< HEAD
 
-  // Corregido: recibe 'data' y retorna 'any'
   async authentication7(data?: Record<string, any>): Promise<any> {
     return apiClient.post(`/api/Authentication/logout`, data || {});
-=======
-  async authentication7(): Promise<any> {
-    return apiClient.post(`/api/Authentication/logout`);
->>>>>>> c3e0505f48b11de6bc0f93021ff3560f81e061a0
   },
 
   async authentication8(data: Record<string, any>): Promise<any> {
