@@ -21,7 +21,7 @@ export const authenticationService = {
     return apiClient.post(`/api/Authentication/refresh-token`, data);
   },
   async authentication7(): Promise<any> {
-    return apiClient.post(`/api/Authentication/logout`, data);
+    return apiClient.post(`/api/Authentication/logout`);
   },
   async authentication8(data: any): Promise<any> {
     return apiClient.post(`/api/Authentication/revoke-token`, data);
