@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image"; // Importación necesaria para el logo
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -18,7 +19,6 @@ import {
   LayoutDashboard,
   Menu,
   X,
-  Loader2,
   ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
@@ -84,14 +84,12 @@ export function Sidebar() {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isZooming, setIsZooming] = useState(false);
 
   // ESTADOS PARA EL SCROLL
   const [showScrollArrow, setShowScrollArrow] = useState(false);
   const desktopNavRef = useRef<HTMLElement>(null);
   const mobileNavRef = useRef<HTMLElement>(null);
 
-  // Función para detectar si hay más contenido abajo
   const checkScroll = (ref: React.RefObject<HTMLElement | null>) => {
     if (ref.current) {
       const { scrollTop, scrollHeight, clientHeight } = ref.current;
@@ -104,7 +102,6 @@ export function Sidebar() {
     const currentRef = isMobileOpen ? mobileNavRef : desktopNavRef;
     const handleScroll = () => checkScroll(currentRef);
 
-    // Check inicial y listeners
     setTimeout(() => checkScroll(currentRef), 100);
 
     const navElement = currentRef.current;
@@ -122,14 +119,8 @@ export function Sidebar() {
       setIsMobileOpen(false);
       return;
     }
-    setIsZooming(true);
-    setTimeout(() => {
-      router.push(path);
-      setTimeout(() => {
-        setIsMobileOpen(false);
-        setIsZooming(false);
-      }, 500);
-    }, 700);
+    router.push(path);
+    setIsMobileOpen(false);
   };
 
   return (
@@ -169,13 +160,25 @@ export function Sidebar() {
             className="fixed inset-0 z-[100] flex flex-col lg:hidden bg-[#00284d]"
           >
             <div className="flex justify-between items-center p-8 shrink-0">
-              <div className="flex flex-col">
-                <span className="text-white font-bold text-2xl font-serif">
-                  SAPFIAI
-                </span>
-                <span className="text-[#d5bb87] text-[10px] tracking-[3px] uppercase">
-                  U. de Caldas
-                </span>
+              <div className="flex items-center gap-3">
+                <div className="shrink-0 flex items-center justify-center rounded-xl border border-[#d5bb87]/30 w-[42px] h-[42px] bg-[#003e70] overflow-hidden shadow-inner">
+                  <Image
+                    src="/images/Logo_Amarillo.png"
+                    alt="Logo U. de Caldas"
+                    width={32}
+                    height={32}
+                    className="object-contain"
+                    priority
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-white font-bold text-2xl font-serif">
+                    SAPFIAI
+                  </span>
+                  <span className="text-[#d5bb87] text-[10px] tracking-[3px] uppercase">
+                    U. de Caldas
+                  </span>
+                </div>
               </div>
               <button
                 onClick={() => setIsMobileOpen(false)}
@@ -229,30 +232,47 @@ export function Sidebar() {
         style={{ background: "#00284d" }}
       >
         <div className="p-5 h-[72px] flex items-center justify-between border-b border-[#003e70]">
-          {!collapsed && (
+          {!collapsed ? (
             <div className="flex items-center gap-3">
-              <div className="shrink-0 flex items-center justify-center rounded-full border-2 border-[#d5bb87] w-[38px] h-[38px] bg-[#003e70]">
-                <LogoIcon />
+              {/* LOGO AMARILLO REAL */}
+              <div className="shrink-0 flex items-center justify-center rounded-xl border border-[#d5bb87]/30 w-[42px] h-[42px] bg-[#003e70] overflow-hidden shadow-inner">
+                <Image
+                  src="/images/Logo_Amarillo.png"
+                  alt="Logo U. de Caldas"
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                  priority
+                />
               </div>
               <div className="flex flex-col leading-tight">
                 <span className="text-white font-bold text-sm font-serif">
                   SAPFIAI
                 </span>
-                <span className="text-[#d5bb87] text-[10px] uppercase">
+                <span className="text-[#d5bb87] text-[10px] uppercase font-black">
                   U. de Caldas
                 </span>
               </div>
             </div>
+          ) : (
+            <div className="mx-auto shrink-0 flex items-center justify-center rounded-lg border border-[#d5bb87]/20 w-[36px] h-[36px] bg-[#003e70] overflow-hidden">
+              <Image
+                src="/images/Logo_Amarillo.png"
+                alt="Logo"
+                width={24}
+                height={24}
+                className="object-contain"
+              />
+            </div>
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-2 rounded-lg text-[#d5bb87] hover:bg-[#003e70] mx-auto"
+            className="p-2 rounded-lg text-[#d5bb87] hover:bg-[#003e70]"
           >
             {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
           </button>
         </div>
 
-        {/* CONTENEDOR DE NAVEGACIÓN SIN FOOTER */}
         <div className="relative flex-1 flex flex-col min-h-0">
           <nav
             ref={desktopNavRef}
@@ -304,7 +324,6 @@ export function Sidebar() {
             ))}
           </nav>
 
-          {/* INDICADOR DE SCROLL ANIMADO */}
           <AnimatePresence>
             {!collapsed && showScrollArrow && (
               <motion.div
@@ -336,19 +355,5 @@ export function Sidebar() {
         </div>
       </aside>
     </>
-  );
-}
-
-function LogoIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
-      <circle cx="13" cy="13" r="11" stroke="#d5bb87" strokeWidth="1.5" />
-      <path d="M13 5.5 L14.3 9.5 L13 8.7 L11.7 9.5 Z" fill="#d5bb87" />
-      <path
-        d="M8.5 13 L13 11.8 L17.5 13 L13 14.2 Z"
-        fill="#d5bb87"
-        opacity="0.8"
-      />
-    </svg>
   );
 }

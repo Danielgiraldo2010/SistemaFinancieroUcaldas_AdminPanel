@@ -1,15 +1,17 @@
 "use client";
+
 import { useState } from "react";
 import { AuthGuard } from "@/components/guards/AuthGuard";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { useAuthStore } from "@/lib/auth/store";
 import { useRouter, usePathname } from "next/navigation";
-import { LogOut, ChevronDown, UserCircle, LayoutDashboard } from "lucide-react";
+import { LogOut, ChevronDown, UserCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils/cn";
 import Link from "next/link";
+import Image from "next/image";
+import LogoAmarillo from "../../../public/images/Logo_Amarillo.png";
 
-// Mapeo de rutas para títulos dinámicos según tu Sidebar
 const routeConfig: Record<string, { title: string; subtitle: string }> = {
   "/dashboard": { title: "Resumen Global", subtitle: "DASHBOARD" },
   "/dashboard/users": {
@@ -57,15 +59,22 @@ export default function DashboardLayout({
         <Sidebar />
 
         <div className="flex flex-col flex-1 w-full min-w-0">
-          {/* HEADER DINÁMICO */}
+          {/* HEADER DINÁMICO CON LOGO AMARILLO */}
           <header className="sticky top-0 z-40 flex h-[72px] items-center justify-between bg-white px-8 border-b border-gray-100 shadow-sm">
-            {/* Títulos dinámicos y Breadcrumbs */}
+            {/* Títulos dinámicos y Logo */}
             <div className="flex items-center gap-4 pl-12 lg:pl-0">
-              <LayoutDashboard
-                size={18}
-                className="text-[#00284d] opacity-40 hidden md:block"
+              {/* LOGO INSTITUCIONAL AMARILLO */}
+              <Image
+                src={LogoAmarillo}
+                alt="Logo UCaldas"
+                width={32}
+                height={32}
+                priority
+                className="object-contain"
               />
-              <div className="h-5 w-[1px] bg-gray-200 mx-2 hidden md:block" />
+
+              <div className="h-6 w-[1px] bg-gray-200 mx-2 hidden md:block" />
+
               <div className="flex flex-col lg:flex-row lg:items-center gap-1 lg:gap-3">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[2px]">
                   {currentRoute.subtitle}
@@ -79,7 +88,6 @@ export default function DashboardLayout({
 
             {/* Acciones de Perfil */}
             <div className="flex items-center gap-6">
-              {/* Badge de Rol Institucional */}
               <div className="hidden sm:block px-4 py-1 bg-[#efd9af]/30 border border-[#d5bb87]/20 rounded-full">
                 <span className="text-[9px] font-black text-[#b5a27c] uppercase tracking-widest">
                   Rol: SuperAdmin
@@ -100,7 +108,7 @@ export default function DashboardLayout({
                     </span>
                   </div>
 
-                  <div className="w-9 h-9 rounded-full bg-[#00284d] flex items-center justify-center text-white text-sm font-bold border-2 border-white shadow-sm ring-1 ring-gray-100 group-hover:scale-105 transition-transform">
+                  <div className="w-9 h-9 rounded-full bg-[#00284d] flex items-center justify-center text-white text-sm font-bold border-2 border-white shadow-sm ring-1 ring-gray-100 group-hover:scale-105 transition-transform overflow-hidden relative">
                     {user?.email?.charAt(0).toUpperCase() || "U"}
                   </div>
                   <ChevronDown
@@ -134,9 +142,7 @@ export default function DashboardLayout({
                           <UserCircle size={18} className="text-[#003e70]" />
                           <span className="text-sm font-medium">Mi Perfil</span>
                         </Link>
-
                         <div className="h-[1px] bg-gray-100 my-1 mx-4" />
-
                         <button
                           onClick={handleLogout}
                           className="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 transition-colors group"
