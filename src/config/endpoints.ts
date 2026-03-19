@@ -1,0 +1,35 @@
+export const endpoints = {
+  auth: {
+    register: '/api/Authentication/register',
+    login: '/api/Authentication/login',
+    verify2fa: '/api/Authentication/verify-2fa',
+    forgotPassword: '/api/Authentication/forgot-password',
+    resetPassword: '/api/Authentication/reset-password',
+    refreshToken: '/api/Authentication/refresh-token',
+    logout: '/api/Authentication/logout',
+    revokeToken: '/api/Authentication/revoke-token',
+    enable2fa: '/api/Authentication/enable-2fa',
+    auditLogs: '/api/Authentication/audit-logs',
+    userAuditLogs: (userId: string) => `/api/Authentication/audit-logs/user/${userId}`,
+  },
+  security: {
+    blockedIps: '/api/Security/blocked-ips',
+    blockIp: '/api/Security/block-ip',
+    unblockIp: '/api/Security/unblock-ip',
+    unlockAccount: '/api/Security/unlock-account',
+  },
+  permissions: {
+    base: '/api/Permissions',
+    byId: (id: number) => `/api/Permissions/${id}`,
+    byRole: (roleId: string) => `/api/Permissions/role/${roleId}`,
+    assign: '/api/Permissions/assign',
+    remove: '/api/Permissions/remove',
+  },
+  roles: {
+    base: '/api/Roles',
+    byId: (roleId: string) => `/api/Roles/${roleId}`,
+    byUser: (userId: string) => `/api/Roles/user/${userId}`,
+    assign: '/api/Roles/assign',
+    remove: '/api/Roles/remove',
+  },
+} as const;

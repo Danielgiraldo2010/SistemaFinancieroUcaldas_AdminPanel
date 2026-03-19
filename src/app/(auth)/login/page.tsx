@@ -3,6 +3,9 @@
 import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, LifeBuoy } from "lucide-react"
+import { authService } from "@/services"
+import { useAuthStore } from "@/store"
+import { tokenManager } from "@/lib"
 
 export default function LoginPage() {
 
@@ -31,25 +34,20 @@ export default function LoginPage() {
     setError("")
     setLoading(true)
 
+    const { setPendingTwoFAToken, setUser } = useAuthStore.getState()
+
     try {
 
-      const response = await fetch('/api/proxy/api/Authentication/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
+      const data = await authService.login(formData)
 
-      const data = await response.json()
-
-      if (response.ok && data.success) {
-
-        sessionStorage.setItem('userEmail', formData.email)
+      if (data.success) {
 
         if (data.requires2FA || data.user?.twoFactorEnabled) {
+          if (data.token) setPendingTwoFAToken(data.token)
           router.push('/verify-2fa')
         } else {
+          if (data.token) tokenManager.setTokens(data.token, data.refreshToken ?? undefined)
+          setUser(data.user ?? null)
           router.push('/dashboard')
         }
 

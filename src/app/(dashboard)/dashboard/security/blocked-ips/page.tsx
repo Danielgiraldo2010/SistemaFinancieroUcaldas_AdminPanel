@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { securityService } from "@/lib/api/services";
+import { securityService } from "@/services";
 import {
   ShieldAlert,
   ShieldCheck,
@@ -32,7 +32,7 @@ export default function BlockedIpsPage() {
 
   const loadIps = async () => {
     try {
-      const data = await securityService.securityall({ activeOnly: true });
+      const data = await securityService.getBlockedIps({ activeOnly: true });
       setIps(data);
     } catch (error: any) {
       console.error("Error:", error);
@@ -50,7 +50,7 @@ export default function BlockedIpsPage() {
     e.preventDefault();
     setBlocking(true);
     try {
-      await securityService.security({ ...form, blackListReason: 0 });
+      await securityService.blockIp({ ...form, blackListReason: 0 });
       setForm({ ipAddress: "", reason: "", notes: "" });
       loadIps();
     } catch (error) {
@@ -68,7 +68,7 @@ export default function BlockedIpsPage() {
     )
       return;
     try {
-      await securityService.security2({ ipAddress });
+      await securityService.unblockIp({ ipAddress });
       loadIps();
     } catch (error) {
       console.error("Error:", error);

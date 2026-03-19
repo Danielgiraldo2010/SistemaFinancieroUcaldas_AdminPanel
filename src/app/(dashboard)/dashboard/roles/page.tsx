@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { rolesService } from "@/lib/api/services";
+import { rolesService } from "@/services";
 import {
   Shield,
   Plus,
@@ -29,7 +29,7 @@ export default function RolesPage() {
 
   const loadRoles = async () => {
     try {
-      const data = await rolesService.rolesall();
+      const data = await rolesService.getAll();
       setRoles(data);
     } catch (error) {
       console.error("Error:", error);
@@ -43,7 +43,7 @@ export default function RolesPage() {
     if (!newRole.trim()) return;
     setCreating(true);
     try {
-      await rolesService.rolespost({ name: newRole });
+      await rolesService.create({ name: newRole });
       setNewRole("");
       loadRoles();
     } catch (error) {
@@ -56,7 +56,7 @@ export default function RolesPage() {
   const handleDelete = async (roleId: string) => {
     if (!confirm("¿Está seguro de eliminar este rol institucional?")) return;
     try {
-      await rolesService.rolesdelete(roleId);
+      await rolesService.delete(roleId);
       loadRoles();
     } catch (error) {
       console.error("Error:", error);

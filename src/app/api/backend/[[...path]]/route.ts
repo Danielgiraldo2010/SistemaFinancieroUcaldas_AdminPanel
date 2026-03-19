@@ -1,30 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-
-export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  const { path } = await params;
-  return proxyRequest(request, path, 'GET');
-}
-
-export async function POST(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  const { path } = await params;
-  return proxyRequest(request, path, 'POST');
-}
-
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  const { path } = await params;
-  return proxyRequest(request, path, 'PUT');
-}
-
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  const { path } = await params;
-  return proxyRequest(request, path, 'DELETE');
-}
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
 async function proxyRequest(request: NextRequest, path: string[], method: string) {
   try {
-    const url = `${API_URL}/${path.join('/')}`;
+    const url = `${BACKEND_URL}/${path.join('/')}`;
     const searchParams = request.nextUrl.searchParams.toString();
     const fullUrl = searchParams ? `${url}?${searchParams}` : url;
 
@@ -51,4 +31,24 @@ async function proxyRequest(request: NextRequest, path: string[], method: string
       { status: 500 }
     );
   }
+}
+
+export async function GET(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
+  const { path = [] } = await params;
+  return proxyRequest(request, path, 'GET');
+}
+
+export async function POST(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
+  const { path = [] } = await params;
+  return proxyRequest(request, path, 'POST');
+}
+
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
+  const { path = [] } = await params;
+  return proxyRequest(request, path, 'PUT');
+}
+
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
+  const { path = [] } = await params;
+  return proxyRequest(request, path, 'DELETE');
 }

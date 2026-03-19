@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { authenticationService } from '@/lib/api/services';
+import { authService } from '@/services';
 import Link from 'next/link';
 
 export default function ForgotPasswordPage() {
@@ -13,7 +13,7 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      await authenticationService.authentication4({ email });
+      await authService.forgotPassword({ email });
       setSent(true);
     } catch (error) {
       console.error('Error:', error);

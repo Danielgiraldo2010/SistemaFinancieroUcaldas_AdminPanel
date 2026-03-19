@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { permissionsService } from "@/lib/api/services";
+import { permissionsService } from "@/services";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ShieldPlus,
@@ -29,7 +29,7 @@ export default function PermissionsPage() {
 
   const loadPermissions = async () => {
     try {
-      const data = await permissionsService.permissionsall({
+      const data = await permissionsService.getAll({
         activeOnly: false,
       });
       setPermissions(data);
@@ -44,7 +44,7 @@ export default function PermissionsPage() {
     e.preventDefault();
     setCreating(true);
     try {
-      await permissionsService.permissionspost(form);
+      await permissionsService.create(form);
       setForm({ name: "", description: "", module: "" });
       loadPermissions();
     } catch (error) {

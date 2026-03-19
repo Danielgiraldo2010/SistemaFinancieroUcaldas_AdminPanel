@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { AuthGuard } from "@/components/guards/AuthGuard";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { useAuthStore } from "@/lib/auth/store";
+import { AuthGuard } from "@/guards";
+import { Sidebar } from "@/components/layout";
+import { useAuthStore } from "@/store";
 import { useRouter, usePathname } from "next/navigation";
 import { LogOut, ChevronDown, UserCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";

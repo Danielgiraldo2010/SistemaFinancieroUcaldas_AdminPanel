@@ -1,5 +1,5 @@
 "use client";
-import { useAuthStore } from "@/lib/auth/store";
+import { useAuthStore } from "@/store";
 import { useEffect } from "react";
 import {
   User,
@@ -20,12 +20,12 @@ export default function ProfilePage() {
     { label: "Email Institucional", value: user?.email, icon: Mail },
     {
       label: "Nombre de Usuario",
-      value: user?.userName || user?.name,
+      value: user?.userName,
       icon: User,
     },
     {
       label: "Teléfono / Contacto",
-      value: user?.phoneNumber || user?.phone,
+      value: user?.phoneNumber,
       icon: Phone,
     },
     {
