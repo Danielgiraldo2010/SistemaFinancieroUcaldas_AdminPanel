@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { authenticationService } from "@/lib/api/services";
+import { authService } from "@/services";
 import {
   ShieldCheck,
   Mail,
@@ -34,7 +34,7 @@ export default function TwoFactorPage() {
     setStatus({ type: null, msg: "" });
 
     try {
-      await authenticationService.authentication9({ email, password, enable });
+      await authService.enable2fa({ email, password, enable });
       setStatus({
         type: "success",
         msg: `Seguridad 2FA ${enable ? "activada" : "desactivada"} exitosamente.`,

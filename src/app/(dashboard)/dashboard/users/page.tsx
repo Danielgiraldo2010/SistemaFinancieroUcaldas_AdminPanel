@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { authenticationService } from "@/lib/api/services";
+import { authService } from "@/services";
 import {
   UserPlus,
   Mail,
@@ -44,7 +44,7 @@ export default function UsersPage() {
     setCreating(true);
     setStatus({ type: null, msg: "" });
     try {
-      await authenticationService.authentication(form);
+      await authService.register(form);
       setStatus({
         type: "success",
         msg: "Registro completado. El usuario ya puede acceder al sistema.",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { authenticationService } from "@/lib/api/services";
+import { authService } from "@/services";
 import {
   History,
   Search,
@@ -29,7 +29,7 @@ export default function AuditLogsPage() {
     setLoading(true);
     try {
       // Simulación de carga para efectos visuales (puedes quitar el timeout)
-      const data = await authenticationService.authenticationall({
+      const data = await authService.getAuditLogs({
         pageNumber: 1,
         pageSize: 20,
       });

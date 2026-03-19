@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { securityService } from "@/lib/api/services";
+import { securityService } from "@/services";
 import {
   UserCheck,
   Mail,
@@ -32,7 +32,7 @@ export default function UnlockAccountPage() {
     setStatus({ type: null, msg: "" });
 
     try {
-      await securityService.security3({ email });
+      await securityService.unlockAccount({ userId: email });
       setStatus({
         type: "success",
         msg: "La cuenta asociada ha sido restaurada con éxito.",

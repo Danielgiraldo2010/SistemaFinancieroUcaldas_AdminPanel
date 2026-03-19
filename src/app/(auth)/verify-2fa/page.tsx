@@ -2,9 +2,9 @@
 
 import { useState, useRef, useEffect, ClipboardEvent } from "react";
 import { useRouter } from "next/navigation";
-import { authenticationService } from "@/lib/api/services";
-import { useAuthStore } from "@/lib/auth/store";
-import Cookies from "js-cookie";
+import { authService } from "@/services";
+import { useAuthStore } from "@/store";
+import { tokenManager } from "@/lib";
 
 export default function Verify2FAPage() {
   const router = useRouter();
@@ -94,15 +94,15 @@ export default function Verify2FAPage() {
     setIsError(false);
 
     try {
-      const token = Cookies.get("temp_2fa_token");
-      const response = await authenticationService.authentication3({
+      const token = tokenManager.getAccessToken() ?? undefined;
+      const response = await authService.verify2fa({
         code: code.join(""),
         token,
       });
 
       if (response.success && response.token) {
-        Cookies.set("access_token", response.token, { expires: 1 });
-        setUser(response.user);
+        tokenManager.setTokens(response.token, response.refreshToken ?? undefined);
+        setUser(response.user ?? null);
         router.push("/dashboard");
       } else {
         triggerError("Código inválido");
