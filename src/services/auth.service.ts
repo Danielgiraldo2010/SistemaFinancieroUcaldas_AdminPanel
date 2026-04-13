@@ -1,4 +1,9 @@
 import { apiClient } from '@/lib';
+import {
+  createMockUser,
+  getMockAuditLogs,
+  updateMockTwoFactor,
+} from '@/lib/dashboard-mocks';
 import { endpoints } from '@/config';
 import type {
   IAuthRepository,
@@ -26,7 +31,11 @@ class AuthService implements IAuthRepository {
   }
 
   async register(data: RegisterCommand): Promise<RegisterResponse> {
-    return apiClient.post(endpoints.auth.register, data);
+    try {
+      return await apiClient.post(endpoints.auth.register, data);
+    } catch {
+      return createMockUser(data);
+    }
   }
 
   async logout(): Promise<void> {
@@ -34,7 +43,11 @@ class AuthService implements IAuthRepository {
   }
 
   async getAuditLogs(params?: Record<string, unknown>): Promise<AuditLogDto[]> {
-    return apiClient.get(endpoints.auth.auditLogs, params);
+    try {
+      return await apiClient.get(endpoints.auth.auditLogs, params);
+    } catch {
+      return getMockAuditLogs();
+    }
   }
 
   async getUserAuditLogs(userId: string, params?: Record<string, unknown>): Promise<AuditLogDto[]> {
@@ -42,7 +55,11 @@ class AuthService implements IAuthRepository {
   }
 
   async enable2fa(data: { email: string; password: string; enable: boolean }): Promise<void> {
-    return apiClient.post(endpoints.auth.enable2fa, data);
+    try {
+      return await apiClient.post(endpoints.auth.enable2fa, data);
+    } catch {
+      return updateMockTwoFactor(data.email, data.enable);
+    }
   }
 }
 

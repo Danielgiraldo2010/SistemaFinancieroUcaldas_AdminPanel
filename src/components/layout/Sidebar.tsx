@@ -1,91 +1,49 @@
 "use client";
+
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image"; // Importación necesaria para el logo
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ShieldCheck,
-  History,
-  Users,
-  Key,
-  UserCircle,
-  Lock,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Fingerprint,
-  Settings,
-  UserCog,
-  LayoutDashboard,
   Menu,
   X,
-  ChevronDown,
 } from "lucide-react";
+import { dashboardMenu } from "@/config/dashboard-navigation";
 import { cn } from "@/lib/utils/cn";
 
-const menuItems = [
-  {
-    category: "Principal",
-    items: [{ name: "Dashboard", path: "/dashboard", icon: LayoutDashboard }],
-  },
-  {
-    category: "Autenticación",
-    items: [
-      {
-        name: "Logs de Auditoría",
-        path: "/dashboard/auth/audit-logs",
-        icon: History,
-      },
-      {
-        name: "Configurar 2FA",
-        path: "/dashboard/auth/2fa",
-        icon: Fingerprint,
-      },
-    ],
-  },
-  {
-    category: "Usuarios y Roles",
-    items: [
-      { name: "Usuarios", path: "/dashboard/users", icon: Users },
-      { name: "Roles", path: "/dashboard/roles", icon: UserCog },
-      { name: "Permisos", path: "/dashboard/permissions", icon: Key },
-    ],
-  },
-  {
-    category: "Seguridad",
-    items: [
-      {
-        name: "IPs Bloqueadas",
-        path: "/dashboard/security/blocked-ips",
-        icon: ShieldCheck,
-      },
-      {
-        name: "Desbloquear Cuenta",
-        path: "/dashboard/security/unlock-account",
-        icon: Lock,
-      },
-    ],
-  },
-  {
-    category: "Configuración",
-    items: [
-      { name: "Mi Perfil", path: "/dashboard/profile", icon: UserCircle },
-      {
-        name: "Seguridad",
-        path: "/dashboard/profile/change-password",
-        icon: Settings,
-      },
-    ],
-  },
-];
+const isPathActive = (pathname: string, path: string) =>
+  pathname === path || pathname.startsWith(`${path}/`);
+
+const isSectionActive = (pathname: string, section: (typeof dashboardMenu)[number]) => {
+  if (section.path) {
+    return isPathActive(pathname, section.path);
+  }
+  return (
+    section.items?.some((item) => isPathActive(pathname, item.path)) ?? false
+  );
+};
+
+const getInitialExpandedSections = (pathname: string) =>
+  dashboardMenu.reduce<Record<string, boolean>>((acc, section) => {
+    if (section.items?.length) {
+      acc[section.name] = isSectionActive(pathname, section);
+    }
+    return acc;
+  }, {});
 
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(
+    () => getInitialExpandedSections(pathname),
+  );
 
-  // ESTADOS PARA EL SCROLL
   const [showScrollArrow, setShowScrollArrow] = useState(false);
   const desktopNavRef = useRef<HTMLElement>(null);
   const mobileNavRef = useRef<HTMLElement>(null);
@@ -97,6 +55,17 @@ export function Sidebar() {
       setShowScrollArrow(hasMore);
     }
   };
+
+  const visibleExpandedSections = dashboardMenu.reduce<Record<string, boolean>>(
+    (acc, section) => {
+      if (section.items?.length) {
+        acc[section.name] =
+          expandedSections[section.name] || isSectionActive(pathname, section);
+      }
+      return acc;
+    },
+    {},
+  );
 
   useEffect(() => {
     const currentRef = isMobileOpen ? mobileNavRef : desktopNavRef;
@@ -112,7 +81,7 @@ export function Sidebar() {
       navElement?.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
     };
-  }, [isMobileOpen, collapsed, pathname]);
+  }, [isMobileOpen, collapsed, pathname, visibleExpandedSections]);
 
   const handleNavigation = (path: string) => {
     if (path === pathname) {
@@ -121,6 +90,24 @@ export function Sidebar() {
     }
     router.push(path);
     setIsMobileOpen(false);
+  };
+
+  const toggleSection = (sectionName: string) => {
+    if (collapsed) setCollapsed(false);
+
+    // Si la sección tiene subitems, navegar directo al primero
+    const section = dashboardMenu.find((s) => s.name === sectionName);
+    if (section?.items?.length) {
+      const firstPath = section.items[0].path;
+      setExpandedSections((current) => ({ ...current, [sectionName]: true }));
+      if (pathname !== firstPath) router.push(firstPath);
+      return;
+    }
+
+    setExpandedSections((current) => ({
+      ...current,
+      [sectionName]: !current[sectionName],
+    }));
   };
 
   return (
@@ -143,7 +130,6 @@ export function Sidebar() {
         }
       `}</style>
 
-      {/* --- MÓVIL --- */}
       <button
         onClick={() => setIsMobileOpen(true)}
         className="lg:hidden fixed top-5 left-5 z-[60] p-3 bg-[#00284d]/90 text-[#d5bb87] rounded-full border border-[#d5bb87]/30 shadow-2xl"
@@ -190,40 +176,99 @@ export function Sidebar() {
 
             <nav
               ref={mobileNavRef}
-              className="flex-1 overflow-y-auto no-scrollbar px-8 space-y-8 pb-20"
+              className="flex-1 overflow-y-auto no-scrollbar px-8 space-y-5 pb-20"
             >
-              {menuItems.map((section) => (
-                <div key={section.category}>
-                  <h3 className="text-[10px] font-black text-[#d5bb87]/40 uppercase tracking-[4px] mb-4">
-                    {section.category}
-                  </h3>
-                  <div className="grid gap-2">
-                    {section.items.map((item) => (
+              {dashboardMenu.map((section) => {
+                const hasChildren = Boolean(section.items?.length);
+                const sectionActive = isSectionActive(pathname, section);
+                const sectionExpanded = visibleExpandedSections[section.name];
+
+                return (
+                  <div key={section.name} className="space-y-2">
+                    {hasChildren ? (
+                      <>
+                        <button
+                          onClick={() => toggleSection(section.name)}
+                          className={cn(
+                            "w-full flex items-center justify-between gap-4 p-5 rounded-2xl border transition-colors",
+                            sectionActive
+                              ? "bg-[#d5bb87]/20 border-[#d5bb87]/30 text-[#d5bb87]"
+                              : "border-[#d5bb87]/10 text-[#efd9af]",
+                          )}
+                        >
+                          <span className="flex items-center gap-4">
+                            <section.icon size={24} />
+                            <span className="text-lg font-semibold">
+                              {section.name}
+                            </span>
+                          </span>
+                          <ChevronDown
+                            size={20}
+                            className={cn(
+                              "transition-transform",
+                              sectionExpanded && "rotate-180",
+                            )}
+                          />
+                        </button>
+
+                        <AnimatePresence initial={false}>
+                          {sectionExpanded && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="grid gap-2 pl-4 border-l border-[#d5bb87]/15 ml-5">
+                                {section.items?.map((item) => {
+                                  const isActive = isPathActive(pathname, item.path);
+                                  return (
+                                    <button
+                                      key={item.path}
+                                      onClick={() => handleNavigation(item.path)}
+                                      className={cn(
+                                        "flex items-center gap-4 p-4 rounded-2xl border border-transparent text-left transition-colors",
+                                        isActive
+                                          ? "bg-[#d5bb87]/20 border-[#d5bb87]/30 text-[#d5bb87]"
+                                          : "text-[#efd9af]",
+                                      )}
+                                    >
+                                      <item.icon size={20} />
+                                      <span className="text-base font-medium">
+                                        {item.name}
+                                      </span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </>
+                    ) : (
                       <button
-                        key={item.path}
-                        onClick={() => handleNavigation(item.path)}
+                        onClick={() => handleNavigation(section.path!)}
                         className={cn(
-                          "flex items-center gap-5 p-5 rounded-2xl border border-transparent",
-                          pathname === item.path
+                          "w-full flex items-center gap-4 p-5 rounded-2xl border transition-colors",
+                          sectionActive
                             ? "bg-[#d5bb87]/20 border-[#d5bb87]/30 text-[#d5bb87]"
-                            : "text-[#efd9af]",
+                            : "border-transparent text-[#efd9af]",
                         )}
                       >
-                        <item.icon size={24} />
+                        <section.icon size={24} />
                         <span className="text-lg font-semibold">
-                          {item.name}
+                          {section.name}
                         </span>
                       </button>
-                    ))}
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </nav>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* --- ESCRITORIO --- */}
       <aside
         className={cn(
           "hidden lg:flex h-screen sticky top-0 transition-all duration-300 flex-col z-50 border-r border-[#003e70]",
@@ -234,7 +279,6 @@ export function Sidebar() {
         <div className="p-5 h-[72px] flex items-center justify-between border-b border-[#003e70]">
           {!collapsed ? (
             <div className="flex items-center gap-3">
-              {/* LOGO AMARILLO REAL */}
               <div className="shrink-0 flex items-center justify-center rounded-xl border border-[#d5bb87]/30 w-[42px] h-[42px] bg-[#003e70] overflow-hidden shadow-inner">
                 <Image
                   src="/images/Logo_Amarillo.png"
@@ -276,52 +320,134 @@ export function Sidebar() {
         <div className="relative flex-1 flex flex-col min-h-0">
           <nav
             ref={desktopNavRef}
-            className="flex-1 overflow-y-auto py-6 px-4 space-y-8 no-scrollbar nav-mask"
+            className="flex-1 overflow-y-auto py-6 px-4 space-y-3 no-scrollbar nav-mask"
           >
-            {menuItems.map((section) => (
-              <div key={section.category} className="space-y-2">
-                {!collapsed && (
-                  <h3 className="px-4 text-[10px] font-extrabold text-[#d5bb87]/40 uppercase tracking-[2px]">
-                    {section.category}
-                  </h3>
-                )}
-                <div className="space-y-1">
-                  {section.items.map((item) => {
-                    const isActive = pathname === item.path;
-                    return (
-                      <Link
-                        key={item.path}
-                        href={item.path}
+            {dashboardMenu.map((section) => {
+              const hasChildren = Boolean(section.items?.length);
+              const sectionActive = isSectionActive(pathname, section);
+              const sectionExpanded = visibleExpandedSections[section.name];
+
+              return (
+                <div key={section.name} className="space-y-1">
+                  {hasChildren ? (
+                    <>
+                      <button
+                        onClick={() => toggleSection(section.name)}
                         className={cn(
-                          "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative",
-                          isActive
+                          "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative",
+                          sectionActive
                             ? "bg-[#003e70] text-[#d5bb87] border border-[#d5bb87]/20 shadow-lg"
                             : "text-[#efd9af]/70 hover:bg-[#003e70]/50 hover:text-[#d5bb87]",
+                          collapsed && "justify-center px-3",
                         )}
                       >
-                        {isActive && (
+                        {sectionActive && (
                           <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-[#d5bb87]" />
                         )}
-                        <item.icon
+                        <section.icon
                           size={20}
                           className={cn(
                             "shrink-0",
-                            isActive
+                            sectionActive
                               ? "text-[#d5bb87]"
                               : "text-[#d5bb87]/50 group-hover:text-[#d5bb87]",
                           )}
                         />
                         {!collapsed && (
-                          <span className="text-sm font-medium tracking-wide">
-                            {item.name}
-                          </span>
+                          <>
+                            <span className="text-sm font-medium tracking-wide flex-1 text-left">
+                              {section.name}
+                            </span>
+                            <ChevronDown
+                              size={16}
+                              className={cn(
+                                "transition-transform",
+                                sectionExpanded && "rotate-180",
+                              )}
+                            />
+                          </>
                         )}
-                      </Link>
-                    );
-                  })}
+                      </button>
+
+                      {!collapsed && (
+                        <AnimatePresence initial={false}>
+                          {sectionExpanded && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="ml-4 pl-3 border-l border-[#d5bb87]/10 space-y-1">
+                                {section.items?.map((item) => {
+                                  const isActive = isPathActive(pathname, item.path);
+                                  return (
+                                    <Link
+                                      key={item.path}
+                                      href={item.path}
+                                      className={cn(
+                                        "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative",
+                                        isActive
+                                          ? "bg-[#003e70] text-[#d5bb87] border border-[#d5bb87]/20 shadow-lg"
+                                          : "text-[#efd9af]/70 hover:bg-[#003e70]/50 hover:text-[#d5bb87]",
+                                      )}
+                                    >
+                                      {isActive && (
+                                        <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-[#d5bb87]" />
+                                      )}
+                                      <item.icon
+                                        size={18}
+                                        className={cn(
+                                          isActive
+                                            ? "text-[#d5bb87]"
+                                            : "text-[#d5bb87]/50 group-hover:text-[#d5bb87]",
+                                        )}
+                                      />
+                                      <span className="text-sm font-medium tracking-wide">
+                                        {item.name}
+                                      </span>
+                                    </Link>
+                                  );
+                                })}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      )}
+                    </>
+                  ) : (
+                    <Link
+                      href={section.path!}
+                      className={cn(
+                        "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative",
+                        sectionActive
+                          ? "bg-[#003e70] text-[#d5bb87] border border-[#d5bb87]/20 shadow-lg"
+                          : "text-[#efd9af]/70 hover:bg-[#003e70]/50 hover:text-[#d5bb87]",
+                        collapsed && "justify-center px-3",
+                      )}
+                    >
+                      {sectionActive && (
+                        <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-[#d5bb87]" />
+                      )}
+                      <section.icon
+                        size={20}
+                        className={cn(
+                          "shrink-0",
+                          sectionActive
+                            ? "text-[#d5bb87]"
+                            : "text-[#d5bb87]/50 group-hover:text-[#d5bb87]",
+                        )}
+                      />
+                      {!collapsed && (
+                        <span className="text-sm font-medium tracking-wide">
+                          {section.name}
+                        </span>
+                      )}
+                    </Link>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </nav>
 
           <AnimatePresence>

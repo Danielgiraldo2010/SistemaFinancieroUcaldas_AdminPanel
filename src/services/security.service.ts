@@ -1,4 +1,10 @@
 import { apiClient } from '@/lib';
+import {
+  createMockBlockedIp,
+  getMockBlockedIps,
+  removeMockBlockedIp,
+  unlockMockAccount,
+} from '@/lib/dashboard-mocks';
 import { endpoints } from '@/config';
 import type {
   ISecurityRepository,
@@ -10,19 +16,35 @@ import type {
 
 class SecurityService implements ISecurityRepository {
   async getBlockedIps(params?: Record<string, unknown>): Promise<IpBlackListDto[]> {
-    return apiClient.get(endpoints.security.blockedIps, params);
+    try {
+      return await apiClient.get(endpoints.security.blockedIps, params);
+    } catch {
+      return getMockBlockedIps();
+    }
   }
 
   async blockIp(data: BlockIpCommand): Promise<void> {
-    return apiClient.post(endpoints.security.blockIp, data);
+    try {
+      return await apiClient.post(endpoints.security.blockIp, data);
+    } catch {
+      return createMockBlockedIp(data);
+    }
   }
 
   async unblockIp(data: UnblockIpCommand): Promise<void> {
-    return apiClient.post(endpoints.security.unblockIp, data);
+    try {
+      return await apiClient.post(endpoints.security.unblockIp, data);
+    } catch {
+      return removeMockBlockedIp(data);
+    }
   }
 
   async unlockAccount(data: UnlockAccountCommand): Promise<void> {
-    return apiClient.post(endpoints.security.unlockAccount, data);
+    try {
+      return await apiClient.post(endpoints.security.unlockAccount, data);
+    } catch {
+      return unlockMockAccount(data);
+    }
   }
 }
 

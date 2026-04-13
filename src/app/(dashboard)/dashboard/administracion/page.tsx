@@ -1,14 +1,9 @@
 "use client";
-
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function Verify2FAPage() {
+export default function AdministracionPage() {
   const router = useRouter();
-
-  useEffect(() => {
-    router.replace("/login");
-  }, [router]);
-
+  useEffect(() => { router.replace("/dashboard/administracion/usuarios"); }, []);
   return null;
 }

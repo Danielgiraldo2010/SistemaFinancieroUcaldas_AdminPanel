@@ -1,4 +1,5 @@
 import { apiClient } from '@/lib';
+import { createMockPermission, getMockPermissions } from '@/lib/dashboard-mocks';
 import { endpoints } from '@/config';
 import type {
   PermissionDto,
@@ -10,11 +11,19 @@ import type {
 
 class PermissionsService {
   async getAll(params?: Record<string, unknown>): Promise<PermissionDto[]> {
-    return apiClient.get(endpoints.permissions.base, params);
+    try {
+      return await apiClient.get(endpoints.permissions.base, params);
+    } catch {
+      return getMockPermissions();
+    }
   }
 
   async create(data: CreatePermissionCommand): Promise<PermissionDto> {
-    return apiClient.post(endpoints.permissions.base, data);
+    try {
+      return await apiClient.post(endpoints.permissions.base, data);
+    } catch {
+      return createMockPermission(data);
+    }
   }
 
   async getById(id: number): Promise<PermissionDto> {

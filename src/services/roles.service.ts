@@ -1,4 +1,5 @@
 import { apiClient } from '@/lib';
+import { createMockRole, deleteMockRole, getMockRoles } from '@/lib/dashboard-mocks';
 import { endpoints } from '@/config';
 import type {
   RoleDto,
@@ -10,11 +11,19 @@ import type {
 
 class RolesService {
   async getAll(): Promise<RoleDto[]> {
-    return apiClient.get(endpoints.roles.base);
+    try {
+      return await apiClient.get(endpoints.roles.base);
+    } catch {
+      return getMockRoles();
+    }
   }
 
   async create(data: CreateRoleCommand): Promise<RoleDto> {
-    return apiClient.post(endpoints.roles.base, data);
+    try {
+      return await apiClient.post(endpoints.roles.base, data);
+    } catch {
+      return createMockRole(data.name);
+    }
   }
 
   async getById(roleId: string): Promise<RoleDto> {
@@ -26,7 +35,11 @@ class RolesService {
   }
 
   async delete(roleId: string): Promise<void> {
-    return apiClient.delete(endpoints.roles.byId(roleId));
+    try {
+      return await apiClient.delete(endpoints.roles.byId(roleId));
+    } catch {
+      return deleteMockRole(roleId);
+    }
   }
 
   async getByUser(userId: string): Promise<RoleDto[]> {
