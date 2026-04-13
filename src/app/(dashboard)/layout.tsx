@@ -3,35 +3,15 @@
 import { useState } from "react";
 import { AuthGuard } from "@/guards";
 import { Sidebar } from "@/components/layout";
+import { getDashboardRouteMeta } from "@/config/dashboard-navigation";
 import { useAuthStore } from "@/store";
 import { useRouter, usePathname } from "next/navigation";
-import { LogOut, ChevronDown, UserCircle } from "lucide-react";
+import { LogOut, ChevronDown, ChevronRight, UserCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils/cn";
 import Link from "next/link";
 import Image from "next/image";
 import LogoAmarillo from "../../../public/images/Logo_Amarillo.png";
-
-const routeConfig: Record<string, { title: string; subtitle: string }> = {
-  "/dashboard": { title: "Resumen Global", subtitle: "DASHBOARD" },
-  "/dashboard/users": {
-    title: "Gestión de Usuarios",
-    subtitle: "USUARIOS Y ROLES",
-  },
-  "/dashboard/roles": {
-    title: "Configuración de Roles",
-    subtitle: "USUARIOS Y ROLES",
-  },
-  "/dashboard/permissions": {
-    title: "Gestión de Permisos",
-    subtitle: "USUARIOS Y ROLES",
-  },
-  "/dashboard/auth/audit-logs": {
-    title: "Logs de Auditoría",
-    subtitle: "AUTENTICACIÓN",
-  },
-  "/dashboard/profile": { title: "Mi Perfil", subtitle: "CONFIGURACIÓN" },
-};
 
 export default function DashboardLayout({
   children,
@@ -43,10 +23,7 @@ export default function DashboardLayout({
   const { logout, user } = useAuthStore();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  const currentRoute = routeConfig[pathname] || {
-    title: "Panel de Control",
-    subtitle: "SISTEMA",
-  };
+  const currentRoute = getDashboardRouteMeta(pathname);
 
   const handleLogout = () => {
     logout();
@@ -75,14 +52,22 @@ export default function DashboardLayout({
 
               <div className="h-6 w-[1px] bg-gray-200 mx-2 hidden md:block" />
 
-              <div className="flex flex-col lg:flex-row lg:items-center gap-1 lg:gap-3">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[2px]">
-                  {currentRoute.subtitle}
-                </span>
-                <span className="hidden lg:block text-gray-300 text-xs">/</span>
-                <h1 className="text-sm font-black text-[#00284d] uppercase tracking-wider">
-                  {currentRoute.title}
-                </h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                {currentRoute.breadcrumbs.map((crumb, index) => (
+                  <div key={`${crumb}-${index}`} className="flex items-center gap-2">
+                    {index > 0 && <ChevronRight size={12} className="text-gray-300" />}
+                    <span
+                      className={cn(
+                        "text-[10px] font-bold uppercase tracking-[2px]",
+                        index === currentRoute.breadcrumbs.length - 1
+                          ? "text-[#00284d]"
+                          : "text-gray-400",
+                      )}
+                    >
+                      {crumb}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
 

@@ -34,22 +34,16 @@ export default function LoginPage() {
     setError("")
     setLoading(true)
 
-    const { setPendingTwoFAToken, setUser } = useAuthStore.getState()
+    const { setUser } = useAuthStore.getState()
 
     try {
 
       const data = await authService.login(formData)
 
       if (data.success) {
-
-        if (data.requires2FA || data.user?.twoFactorEnabled) {
-          if (data.token) setPendingTwoFAToken(data.token)
-          router.push('/verify-2fa')
-        } else {
-          if (data.token) tokenManager.setTokens(data.token, data.refreshToken ?? undefined)
-          setUser(data.user ?? null)
-          router.push('/dashboard')
-        }
+        if (data.token) tokenManager.setTokens(data.token, data.refreshToken ?? undefined)
+        setUser(data.user ?? null)
+        router.push('/dashboard')
 
       } else {
 

@@ -1,0 +1,194 @@
+{
+  "catalogo_presupuestal": [
+    {
+      "codigo": "12010",
+      "nombre": "Unidad Ejecutora Facultad IA e Ingenierías",
+      "tipo": "ingreso",
+      "nivel": 1,
+      "padre": null,
+      "permite_movimiento": false,
+      "unidad_ejecutora": "Facultad IA e Ingenierías",
+      "apropiacion_inicial": 0,
+      "presupuesto_vigente": 0,
+      "children": [
+        {
+          "codigo": "1201001",
+          "nombre": "Ingresos corrientes",
+          "tipo": "ingreso",
+          "nivel": 2,
+          "padre": "12010",
+          "permite_movimiento": false,
+          "unidad_ejecutora": "Facultad IA e Ingenierías",
+          "apropiacion_inicial": 0,
+          "presupuesto_vigente": 0,
+          "children": [
+            {
+              "codigo": "120100102",
+              "nombre": "Ingresos no tributarios",
+              "tipo": "ingreso",
+              "nivel": 3,
+              "padre": "1201001",
+              "permite_movimiento": false,
+              "unidad_ejecutora": "Facultad IA e Ingenierías",
+              "apropiacion_inicial": 0,
+              "presupuesto_vigente": 0,
+              "children": [
+                {
+                  "codigo": "1201001020202",
+                  "nombre": "Derechos pecuniarios educación superior",
+                  "tipo": "ingreso",
+                  "nivel": 4,
+                  "padre": "120100102",
+                  "permite_movimiento": false,
+                  "unidad_ejecutora": "Facultad IA e Ingenierías",
+                  "apropiacion_inicial": 0,
+                  "presupuesto_vigente": 0,
+                  "children": [
+                    {
+                      "codigo": "12010010202020103",
+                      "nombre": "Matrículas pregrado",
+                      "tipo": "ingreso",
+                      "nivel": 5,
+                      "padre": "1201001020202",
+                      "permite_movimiento": true,
+                      "unidad_ejecutora": "Vicerrectoría Académica",
+                      "apropiacion_inicial": 4200000000,
+                      "presupuesto_vigente": 4200000000,
+                      "children": []
+                    },
+                    {
+                      "codigo": "12010010202020203",
+                      "nombre": "Matrículas posgrado",
+                      "tipo": "ingreso",
+                      "nivel": 5,
+                      "padre": "1201001020202",
+                      "permite_movimiento": true,
+                      "unidad_ejecutora": "Vicerrectoría Académica",
+                      "apropiacion_inicial": 1800000000,
+                      "presupuesto_vigente": 1800000000,
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "codigo": "12010021001010101",
+      "nombre": "Superávit fiscal",
+      "tipo": "ingreso",
+      "nivel": 2,
+      "padre": null,
+      "permite_movimiento": true,
+      "unidad_ejecutora": "Rectoría",
+      "apropiacion_inicial": 220000000,
+      "presupuesto_vigente": 260000000,
+      "children": []
+    },
+
+    {
+      "codigo": "223100001",
+      "nombre": "Gastos de personal",
+      "tipo": "gasto",
+      "nivel": 1,
+      "padre": null,
+      "permite_movimiento": false,
+      "unidad_ejecutora": "Vicerrectoría Académica",
+      "apropiacion_inicial": 0,
+      "presupuesto_vigente": 0,
+      "children": [
+        {
+          "codigo": "22310000101",
+          "nombre": "Planta de personal permanente",
+          "tipo": "gasto",
+          "nivel": 2,
+          "padre": "223100001",
+          "permite_movimiento": false,
+          "unidad_ejecutora": "Vicerrectoría Académica",
+          "apropiacion_inicial": 0,
+          "presupuesto_vigente": 0,
+          "children": [
+            {
+              "codigo": "22310000101010101",
+              "nombre": "Sueldo básico",
+              "tipo": "gasto",
+              "nivel": 3,
+              "padre": "22310000101",
+              "permite_movimiento": true,
+              "unidad_ejecutora": "Vicerrectoría Académica",
+              "apropiacion_inicial": 6700000000,
+              "presupuesto_vigente": 6700000000,
+              "children": []
+            },
+            {
+              "codigo": "22310000101010105",
+              "nombre": "Auxilio de transporte",
+              "tipo": "gasto",
+              "nivel": 3,
+              "padre": "22310000101",
+              "permite_movimiento": true,
+              "unidad_ejecutora": "Vicerrectoría Académica",
+              "apropiacion_inicial": 180000000,
+              "presupuesto_vigente": 210000000,
+              "children": []
+            },
+            {
+              "codigo": "22310000101010106",
+              "nombre": "Prima de servicio",
+              "tipo": "gasto",
+              "nivel": 3,
+              "padre": "22310000101",
+              "permite_movimiento": true,
+              "unidad_ejecutora": "Vicerrectoría Académica",
+              "apropiacion_inicial": 640000000,
+              "presupuesto_vigente": 680000000,
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "codigo": "223100201",
+      "nombre": "Personal supernumerario y planta temporal",
+      "tipo": "gasto",
+      "nivel": 1,
+      "padre": null,
+      "permite_movimiento": false,
+      "unidad_ejecutora": "Vicerrectoría Académica",
+      "apropiacion_inicial": 0,
+      "presupuesto_vigente": 0,
+      "children": [
+        {
+          "codigo": "22310020102010101",
+          "nombre": "Sueldo básico temporal",
+          "tipo": "gasto",
+          "nivel": 2,
+          "padre": "223100201",
+          "permite_movimiento": true,
+          "unidad_ejecutora": "Vicerrectoría Académica",
+          "apropiacion_inicial": 540000000,
+          "presupuesto_vigente": 620000000,
+          "children": []
+        },
+        {
+          "codigo": "22310020102010106",
+          "nombre": "Prima de servicio temporal",
+          "tipo": "gasto",
+          "nivel": 2,
+          "padre": "223100201",
+          "permite_movimiento": true,
+          "unidad_ejecutora": "Vicerrectoría Académica",
+          "apropiacion_inicial": 90000000,
+          "presupuesto_vigente": 95000000,
+          "children": []
+        }
+      ]
+    }
+  ]
+}
