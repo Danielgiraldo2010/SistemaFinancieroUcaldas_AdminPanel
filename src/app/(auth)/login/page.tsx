@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, LifeBuoy } from "lucide-react"
 import { authService } from "@/services"
@@ -220,6 +221,20 @@ export default function LoginPage() {
           cursor:not-allowed;
         }
 
+        .forgot-link{
+          display:flex;
+          justify-content:flex-end;
+          margin-top:12px;
+          font-size:12px;
+          font-weight:700;
+          color:#004aad;
+          text-decoration:none;
+        }
+
+        .forgot-link:hover{
+          text-decoration:underline;
+        }
+
         .error-box{
           background:#ffe5e5;
           color:#b30000;
@@ -353,6 +368,10 @@ export default function LoginPage() {
               </button>
 
             </div>
+
+            <Link href="/forgot-password" className="forgot-link">
+              ¿Olvidaste tu contraseña?
+            </Link>
           </div>
 
           <button

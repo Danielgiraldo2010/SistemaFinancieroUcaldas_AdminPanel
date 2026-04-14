@@ -1,10 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, ExternalLink, X } from "lucide-react";
+import { Plus, ExternalLink, Upload, X } from "lucide-react";
 
 type Acuerdo = {
   id: number;
+  numero: string;
+  titulo: string;
+  fecha: string;
+  enlace: string;
+  vigente: boolean;
+  archivoNombre?: string | null;
+};
+
+type FormState = {
   numero: string;
   titulo: string;
   fecha: string;
@@ -23,12 +32,28 @@ const inicial: Acuerdo[] = [
 export default function NormatividadAcuerdosPage() {
   const [acuerdos, setAcuerdos] = useState<Acuerdo[]>(inicial);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ numero: "", titulo: "", fecha: "", enlace: "", vigente: true });
+  const [form, setForm] = useState<FormState>({ numero: "", titulo: "", fecha: "", enlace: "", vigente: true });
+  const [modoCarga, setModoCarga] = useState<"manual" | "archivo">("manual");
+  const [archivo, setArchivo] = useState<File | null>(null);
 
   const agregar = () => {
-    if (!form.numero || !form.titulo) return;
-    setAcuerdos((prev) => [{ ...form, id: prev.length + 1 }, ...prev]);
+    const enlaceArchivo = archivo ? URL.createObjectURL(archivo) : "";
+    const enlaceFinal = modoCarga === "archivo" ? enlaceArchivo : form.enlace;
+
+    if (!form.numero || !form.titulo || !enlaceFinal) return;
+
+    setAcuerdos((prev) => [
+      {
+        ...form,
+        enlace: enlaceFinal,
+        archivoNombre: archivo?.name ?? null,
+        id: prev.length + 1,
+      },
+      ...prev,
+    ]);
     setForm({ numero: "", titulo: "", fecha: "", enlace: "", vigente: true });
+    setArchivo(null);
+    setModoCarga("manual");
     setShowForm(false);
   };
 
@@ -56,24 +81,76 @@ export default function NormatividadAcuerdosPage() {
             <span className="text-xs font-black uppercase tracking-widest text-[#00284d]">Nuevo Acuerdo</span>
             <button onClick={() => setShowForm(false)}><X size={16} className="text-slate-400" /></button>
           </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setModoCarga("manual")}
+              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                modoCarga === "manual"
+                  ? "bg-[#00284d] text-[#d5bb87]"
+                  : "bg-white text-[#00284d] border border-slate-200"
+              }`}
+            >
+              Crear manualmente
+            </button>
+            <button
+              onClick={() => setModoCarga("archivo")}
+              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                modoCarga === "archivo"
+                  ? "bg-[#00284d] text-[#d5bb87]"
+                  : "bg-white text-[#00284d] border border-slate-200"
+              }`}
+            >
+              <span className="inline-flex items-center gap-2">
+                <Upload size={12} /> Subir archivo
+              </span>
+            </button>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
               { label: "N° Acuerdo", key: "numero",  type: "text" },
               { label: "Fecha",      key: "fecha",   type: "date" },
               { label: "Título",     key: "titulo",  type: "text" },
-              { label: "Enlace URL", key: "enlace",  type: "url"  },
+              ...(modoCarga === "manual"
+                ? [{ label: "Enlace URL", key: "enlace", type: "url" }]
+                : []),
             ].map(({ label, key, type }) => (
               <div key={key} className="flex flex-col gap-1">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</label>
                 <input
                   type={type}
-                  value={(form as any)[key]}
-                  onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+                  value={form[key as keyof FormState]}
+                  onChange={(e) =>
+                    setForm((current) => ({
+                      ...current,
+                      [key]: e.target.value,
+                    }))
+                  }
                   className="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#d5bb87]/40"
                 />
               </div>
             ))}
           </div>
+          {modoCarga === "archivo" && (
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Archivo del acuerdo
+              </label>
+              <label className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-[#d5bb87]/50 bg-[#d5bb87]/5 px-4 py-3 text-sm text-slate-600">
+                <span className="truncate">
+                  {archivo ? archivo.name : "Selecciona un archivo PDF o documento institucional"}
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-xl bg-[#00284d] px-3 py-2 text-[10px] font-black uppercase tracking-widest text-[#d5bb87]">
+                  <Upload size={12} /> Cargar
+                </span>
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  className="hidden"
+                  onChange={(e) => setArchivo(e.target.files?.[0] ?? null)}
+                />
+              </label>
+            </div>
+          )}
           <div className="flex items-center gap-3">
             <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">¿Vigente?</label>
             <button
@@ -109,7 +186,7 @@ export default function NormatividadAcuerdosPage() {
                 <td className="px-6 py-4">
                   <a href={a.enlace} target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-1 text-xs text-blue-600 hover:underline font-medium">
-                    <ExternalLink size={12} /> Ver documento
+                    <ExternalLink size={12} /> {a.archivoNombre ? `Ver ${a.archivoNombre}` : "Ver documento"}
                   </a>
                 </td>
                 <td className="px-6 py-4">

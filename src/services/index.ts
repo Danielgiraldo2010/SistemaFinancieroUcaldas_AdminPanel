@@ -4,3 +4,4 @@ export * from './permissions.service';
 export * from './roles.service';
 export * from './presupuesto.service';
 export * from './catalogo-presupuestal.service';
+export * from './users.service';

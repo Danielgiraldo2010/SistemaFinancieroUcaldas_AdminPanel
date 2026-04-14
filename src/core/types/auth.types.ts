@@ -3,6 +3,7 @@ export interface UserDto {
   email?: string;
   userName?: string | null;
   phoneNumber?: string | null;
+  roleName?: string | null;
   twoFactorEnabled?: boolean;
   lastLoginDate?: string | null;
   lastLoginIp?: string | null;

@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie';
+import { endpoints } from '@/config';
 
 const REFRESH_THRESHOLD = Number(process.env.NEXT_PUBLIC_TOKEN_REFRESH_THRESHOLD) || 300000;
 const SESSION_TIMEOUT = Number(process.env.NEXT_PUBLIC_SESSION_TIMEOUT) || 1800000;
@@ -32,14 +33,14 @@ class TokenManager {
     if (!refreshToken) return false;
 
     try {
-      const response = await fetch('/api/backend/api/Authentication/refresh-token', {
+      const response = await fetch(`/api/backend${endpoints.auth.refreshToken}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refreshToken }),
       });
       const data = await response.json();
-      if (data.success && data.token) {
-        this.setTokens(data.token, data.refreshToken);
+      if (data?.accessToken && data?.refreshToken) {
+        this.setTokens(data.accessToken, data.refreshToken);
         return true;
       }
     } catch {

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AuthGuard } from "@/guards";
 import { Sidebar } from "@/components/layout";
 import { getDashboardRouteMeta } from "@/config/dashboard-navigation";
+import { findStoredRole, getBestUserDisplayName, getRoleDisplayName } from "@/lib";
 import { useAuthStore } from "@/store";
 import { useRouter, usePathname } from "next/navigation";
 import { LogOut, ChevronDown, ChevronRight, UserCircle } from "lucide-react";
@@ -24,6 +25,13 @@ export default function DashboardLayout({
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const currentRoute = getDashboardRouteMeta(pathname);
+  const resolvedRole = findStoredRole({ userId: user?.id, email: user?.email }) ?? user?.roleName;
+  const displayName = getBestUserDisplayName({
+    userId: user?.id,
+    email: user?.email,
+    userName: user?.userName,
+  });
+  const displayRole = getRoleDisplayName(resolvedRole);
 
   const handleLogout = () => {
     logout();
@@ -39,8 +47,7 @@ export default function DashboardLayout({
           {/* HEADER DINÁMICO CON LOGO AMARILLO */}
           <header className="sticky top-0 z-40 flex h-[72px] items-center justify-between bg-white px-8 border-b border-gray-100 shadow-sm">
             {/* Títulos dinámicos y Logo */}
-            <div className="flex items-center gap-4 pl-12 lg:pl-0">
-              {/* LOGO INSTITUCIONAL AMARILLO */}
+            <Link href="/dashboard" className="flex items-center gap-4 pl-12 lg:pl-0">
               <Image
                 src={LogoAmarillo}
                 alt="Logo UCaldas"
@@ -69,13 +76,13 @@ export default function DashboardLayout({
                   </div>
                 ))}
               </div>
-            </div>
+            </Link>
 
             {/* Acciones de Perfil */}
             <div className="flex items-center gap-6">
               <div className="hidden sm:block px-4 py-1 bg-[#efd9af]/30 border border-[#d5bb87]/20 rounded-full">
                 <span className="text-[9px] font-black text-[#b5a27c] uppercase tracking-widest">
-                  Rol: SuperAdmin
+                  Rol: {displayRole}
                 </span>
               </div>
 
@@ -84,18 +91,26 @@ export default function DashboardLayout({
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                   className="flex items-center gap-3 group transition-all"
                 >
-                  <div className="flex flex-col items-end leading-none hidden md:flex">
+                  <Link
+                    href="/dashboard"
+                    onClick={(event) => event.stopPropagation()}
+                    className="flex flex-col items-end leading-none hidden md:flex"
+                  >
                     <span className="text-[12px] font-bold text-[#00284d] group-hover:text-[#003e70] transition-colors">
-                      {user?.email || "usuario@ucaldas.edu.co"}
+                      {displayName}
                     </span>
                     <span className="text-[10px] text-gray-400 mt-0.5">
-                      Administrador
+                      {displayRole}
                     </span>
-                  </div>
+                  </Link>
 
-                  <div className="w-9 h-9 rounded-full bg-[#00284d] flex items-center justify-center text-white text-sm font-bold border-2 border-white shadow-sm ring-1 ring-gray-100 group-hover:scale-105 transition-transform overflow-hidden relative">
-                    {user?.email?.charAt(0).toUpperCase() || "U"}
-                  </div>
+                  <Link
+                    href="/dashboard"
+                    onClick={(event) => event.stopPropagation()}
+                    className="w-9 h-9 rounded-full bg-[#00284d] flex items-center justify-center text-white text-sm font-bold border-2 border-white shadow-sm ring-1 ring-gray-100 group-hover:scale-105 transition-transform overflow-hidden relative"
+                  >
+                    {displayName.charAt(0).toUpperCase() || "U"}
+                  </Link>
                   <ChevronDown
                     size={14}
                     className={cn(
