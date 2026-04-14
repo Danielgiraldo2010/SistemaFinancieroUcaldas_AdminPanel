@@ -25,6 +25,10 @@ export default function PresupuestoIngresosPage() {
   const [catalogoIngresos, setCatalogoIngresos] = useState<CatalogoPresupuestalNodoDto[]>([]);
   const [selectedIngreso, setSelectedIngreso] = useState<CatalogoPresupuestalNodoDto | null>(null);
   const [modalIngreso, setModalIngreso] = useState(false);
+  const [modalModificacion, setModalModificacion] = useState(false);
+  const [resolucionModificacion, setResolucionModificacion] = useState("");
+  const [requisitoPermisos, setRequisitoPermisos] = useState(false);
+  const [requisitoResolucionFirmada, setRequisitoResolucionFirmada] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -62,6 +66,12 @@ export default function PresupuestoIngresosPage() {
     router.push(`/dashboard/presupuesto/ingresos/nuevo?codigo=${selectedIngreso.codigo}`);
   };
 
+  const continuarModificacion = () => {
+    if (!resolucionModificacion.trim() || !requisitoPermisos || !requisitoResolucionFirmada) return;
+    setModalModificacion(false);
+    router.push(`/dashboard/presupuesto/solicitudes?tipo=modificacion&resolucion=${encodeURIComponent(resolucionModificacion.trim())}&origen=ingresos`);
+  };
+
   return (
     <>
       <Modal
@@ -87,6 +97,55 @@ export default function PresupuestoIngresosPage() {
         </div>
       </Modal>
 
+      <Modal
+        open={modalModificacion}
+        onClose={() => setModalModificacion(false)}
+        title="Modificacion del presupuesto"
+        subtitle="Confirma requisitos obligatorios para registrar la modificacion"
+      >
+        <div className="space-y-4">
+          <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500">
+            Numero de resolucion
+            <input
+              value={resolucionModificacion}
+              onChange={(e) => setResolucionModificacion(e.target.value)}
+              placeholder="Ej: Resolucion 042-2026"
+              className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#00284d]/20"
+            />
+          </label>
+
+          <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4 space-y-3">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Requisitos</p>
+            <label className="flex items-center gap-2 text-xs text-slate-700">
+              <input
+                type="checkbox"
+                checked={requisitoPermisos}
+                onChange={(e) => setRequisitoPermisos(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300"
+              />
+              Permisos validados para realizar la modificacion
+            </label>
+            <label className="flex items-center gap-2 text-xs text-slate-700">
+              <input
+                type="checkbox"
+                checked={requisitoResolucionFirmada}
+                onChange={(e) => setRequisitoResolucionFirmada(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300"
+              />
+              Resolucion firmada y aprobada
+            </label>
+          </div>
+
+          <button
+            onClick={continuarModificacion}
+            disabled={!resolucionModificacion.trim() || !requisitoPermisos || !requisitoResolucionFirmada}
+            className="w-full px-4 py-2.5 bg-[#00284d] text-[#d5bb87] rounded-xl text-[10px] font-black uppercase tracking-widest disabled:opacity-50"
+          >
+            Continuar con modificacion
+          </button>
+        </div>
+      </Modal>
+
       <div className="space-y-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
@@ -106,6 +165,12 @@ export default function PresupuestoIngresosPage() {
             >
               <Receipt size={15} /> Nuevo gasto
             </Link>
+            <button
+              onClick={() => setModalModificacion(true)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-white text-amber-700 border border-amber-200 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-amber-50 hover:border-amber-300 transition-all shadow-sm"
+            >
+              <Receipt size={15} /> Modificacion del presupuesto
+            </button>
           </div>
         </div>
 
