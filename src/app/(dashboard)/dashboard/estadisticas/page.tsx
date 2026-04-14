@@ -8,7 +8,8 @@ import {
 import { catalogoPresupuestalService, flattenCatalogo } from "@/services/catalogo-presupuestal.service";
 import type { CatalogoPresupuestalNodoDto, CatalogoTipo } from "@/core";
 
-const fmtB = (n: number) => `$${(n / 1_000_000_000).toFixed(1)}B`;
+const fmtValue = (n: number) =>
+  `$${new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(n)}`;
 const COLORS = ["#00284d", "#d5bb87", "#10b981", "#f59e0b", "#6366f1", "#f43f5e", "#06b6d4"];
 
 export default function EstadisticasPage() {
@@ -91,9 +92,9 @@ export default function EstadisticasPage() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Rubros filtrados" value={String(filtered.length)} />
-        <StatCard label="Apropiacion inicial" value={fmtB(totalInicial)} />
-        <StatCard label="Presupuesto vigente" value={fmtB(totalVigente)} />
-        <StatCard label="Variacion" value={fmtB(totalVigente - totalInicial)} />
+        <StatCard label="Apropiacion inicial" value={fmtValue(totalInicial)} />
+        <StatCard label="Presupuesto vigente" value={fmtValue(totalVigente)} />
+        <StatCard label="Variacion" value={fmtValue(totalVigente - totalInicial)} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -104,7 +105,7 @@ export default function EstadisticasPage() {
               <Pie data={pieByTipo} cx="50%" cy="50%" innerRadius={65} outerRadius={100} paddingAngle={3} dataKey="value">
                 {pieByTipo.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
               </Pie>
-              <Tooltip formatter={(v) => fmtB(Number(v))} />
+              <Tooltip formatter={(v) => fmtValue(Number(v))} />
               <Legend formatter={(v) => <span className="text-[10px] text-slate-600">{v}</span>} />
             </PieChart>
           </ResponsiveContainer>
@@ -116,8 +117,8 @@ export default function EstadisticasPage() {
             <BarChart data={byUnidad} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis dataKey="name" tick={{ fontSize: 9 }} />
-              <YAxis tickFormatter={(v) => fmtB(Number(v))} tick={{ fontSize: 9 }} />
-              <Tooltip formatter={(v) => fmtB(Number(v))} />
+              <YAxis tickFormatter={(v) => fmtValue(Number(v))} tick={{ fontSize: 9 }} />
+              <Tooltip formatter={(v) => fmtValue(Number(v))} />
               <Bar dataKey="value" fill="#10b981" radius={[4, 4, 0, 0]} name="Vigente" />
             </BarChart>
           </ResponsiveContainer>
@@ -130,8 +131,8 @@ export default function EstadisticasPage() {
           <BarChart data={barByRubro} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
             <XAxis dataKey="name" tick={{ fontSize: 9 }} />
-            <YAxis tickFormatter={(v) => fmtB(Number(v))} tick={{ fontSize: 9 }} />
-            <Tooltip formatter={(v) => fmtB(Number(v))} />
+            <YAxis tickFormatter={(v) => fmtValue(Number(v))} tick={{ fontSize: 9 }} />
+            <Tooltip formatter={(v) => fmtValue(Number(v))} />
             <Legend formatter={(v) => <span className="text-[10px]">{v}</span>} />
             <Bar dataKey="Inicial" fill="#00284d" radius={[4, 4, 0, 0]} />
             <Bar dataKey="Vigente" fill="#d5bb87" radius={[4, 4, 0, 0]} />

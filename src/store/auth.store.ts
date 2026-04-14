@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { tokenManager } from '@/lib';
+import { persistAuthUser, readPersistedAuthUser, tokenManager } from '@/lib';
 import { AuthStatus } from '@/core';
 import type { UserDto } from '@/core';
 
@@ -16,14 +16,15 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
+  user: readPersistedAuthUser<UserDto>(),
   status: AuthStatus.Idle,
-  isAuthenticated: false,
+  isAuthenticated: !!readPersistedAuthUser<UserDto>(),
   isLoading: true,
   pendingTwoFAToken: null,
 
   setUser: (user) => {
     if (user) tokenManager.startMonitoring();
+    persistAuthUser(user);
     set({
       user,
       isAuthenticated: !!user,
@@ -36,6 +37,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => {
     tokenManager.cleanup();
     tokenManager.clearTokens();
+    persistAuthUser<UserDto>(null);
     set({
       user: null,
       isAuthenticated: false,
@@ -46,8 +48,10 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   initialize: () => {
     const token = tokenManager.getAccessToken();
+    const storedUser = readPersistedAuthUser<UserDto>();
     if (token) tokenManager.startMonitoring();
     set({
+      user: storedUser,
       isAuthenticated: !!token,
       status: token ? AuthStatus.Authenticated : AuthStatus.Unauthenticated,
       isLoading: false,

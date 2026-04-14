@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib';
+import { apiClient, findStoredRole, getBestUserDisplayName } from '@/lib';
 import {
   createMockUser,
   getMockAuditLogs,
@@ -17,13 +17,48 @@ import type {
   AuditLogDto,
 } from '@/core';
 
+type AccessTokenApiResponse = {
+  accessToken?: string;
+  refreshToken?: string;
+  expiresIn?: number;
+  tokenType?: string | null;
+};
+
+type InfoApiResponse = {
+  email?: string;
+  isEmailConfirmed?: boolean;
+};
+
 class AuthService implements IAuthRepository {
   async login(data: LoginCommand): Promise<LoginResponse> {
-    return apiClient.post(endpoints.auth.login, data);
+    const response = await apiClient.post<AccessTokenApiResponse>(
+      `${endpoints.auth.login}?useCookies=false&useSessionCookies=false`,
+      data,
+    );
+
+    const user = await this.getCurrentUser(data.email);
+
+    return {
+      success: !!response.accessToken,
+      token: response.accessToken ?? null,
+      refreshToken: response.refreshToken ?? null,
+      user,
+      message: response.accessToken ? null : 'No se recibió token de acceso.',
+    };
   }
 
   async verify2fa(data: ValidateTwoFactorCommand): Promise<ValidateTwoFactorResponse> {
-    return apiClient.post(endpoints.auth.verify2fa, data);
+    const response = await apiClient.post<AccessTokenApiResponse>(endpoints.auth.verify2fa, {
+      twoFactorCode: data.code,
+    });
+
+    return {
+      success: !!response.accessToken,
+      token: response.accessToken ?? null,
+      refreshToken: response.refreshToken ?? null,
+      user: await this.getCurrentUser(),
+      message: response.accessToken ? null : 'No se recibió token de acceso.',
+    };
   }
 
   async forgotPassword(data: ForgotPasswordCommand): Promise<void> {
@@ -32,7 +67,16 @@ class AuthService implements IAuthRepository {
 
   async register(data: RegisterCommand): Promise<RegisterResponse> {
     try {
-      return await apiClient.post(endpoints.auth.register, data);
+      await apiClient.post(endpoints.auth.register, {
+        email: data.email,
+        password: data.password,
+        fullName: data.userName ?? data.email ?? 'Usuario',
+      });
+
+      return {
+        success: true,
+        message: 'Usuario registrado correctamente.',
+      };
     } catch {
       return createMockUser(data);
     }
@@ -56,9 +100,27 @@ class AuthService implements IAuthRepository {
 
   async enable2fa(data: { email: string; password: string; enable: boolean }): Promise<void> {
     try {
-      return await apiClient.post(endpoints.auth.enable2fa, data);
+      return await apiClient.post(endpoints.auth.enable2fa, { enable: data.enable });
     } catch {
       return updateMockTwoFactor(data.email, data.enable);
+    }
+  }
+
+  async getCurrentUser(fallbackEmail?: string): Promise<LoginResponse['user']> {
+    try {
+      const info = await apiClient.get<InfoApiResponse>(endpoints.auth.info);
+      return {
+        email: info.email ?? fallbackEmail ?? undefined,
+        userName: getBestUserDisplayName({ email: info.email ?? fallbackEmail }),
+        roleName: findStoredRole({ email: info.email ?? fallbackEmail }),
+      };
+    } catch {
+      if (!fallbackEmail) return null;
+      return {
+        email: fallbackEmail,
+        userName: getBestUserDisplayName({ email: fallbackEmail }),
+        roleName: findStoredRole({ email: fallbackEmail }),
+      };
     }
   }
 }

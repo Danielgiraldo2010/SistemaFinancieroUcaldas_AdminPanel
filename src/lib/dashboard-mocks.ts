@@ -158,7 +158,7 @@ export const mockVigencias: VigenciaDto[] = [
 ];
 
 export const mockUnidades: UnidadEjecutoraDto[] = [
-  { id_unidad: 1, codigo: "FAC-ING", nombre: "Facultad de Ingeniería" },
+  { id_unidad: 1, codigo: "FAC-ING", nombre: "Facultad de Ingenierías e Inteligencia Artificial" },
   { id_unidad: 2, codigo: "FAC-CIE", nombre: "Facultad de Ciencias Exactas" },
   { id_unidad: 3, codigo: "VIC-ACA", nombre: "Vicerrectoría Académica" },
   { id_unidad: 4, codigo: "DIR-TI",  nombre: "Dirección de TI" },
@@ -182,7 +182,7 @@ export const mockCentrosCosto: CentroCostoDto[] = [
 export const mockRubros: RubroPresupuestalDto[] = [
   { id_rubro: 1, codigo_catalogo: "2.1", nombre: "Servicios Personales Asociados a la Nómina", tipo: "Gasto",         id_unidad: 3, unidad_nombre: "Vicerrectoría Académica" },
   { id_rubro: 2, codigo_catalogo: "2.2", nombre: "Servicios Personales Indirectos",            tipo: "Gasto",         id_unidad: 3, unidad_nombre: "Vicerrectoría Académica" },
-  { id_rubro: 3, codigo_catalogo: "2.3", nombre: "Gastos Generales",                           tipo: "Gasto",         id_unidad: 1, unidad_nombre: "Facultad de Ingeniería" },
+  { id_rubro: 3, codigo_catalogo: "2.3", nombre: "Gastos Generales",                           tipo: "Gasto",         id_unidad: 1, unidad_nombre: "Facultad de Ingenierías e Inteligencia Artificial" },
   { id_rubro: 4, codigo_catalogo: "3.1", nombre: "Adquisición de Equipos TI",                  tipo: "Inversión",     id_unidad: 4, unidad_nombre: "Dirección de TI" },
   { id_rubro: 5, codigo_catalogo: "1.1", nombre: "Matrículas Pregrado",                        tipo: "Ingreso",       id_unidad: 3, unidad_nombre: "Vicerrectoría Académica" },
   { id_rubro: 6, codigo_catalogo: "1.2", nombre: "Matrículas Posgrado",                        tipo: "Ingreso",       id_unidad: 3, unidad_nombre: "Vicerrectoría Académica" },

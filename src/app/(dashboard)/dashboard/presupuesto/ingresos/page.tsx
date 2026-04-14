@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { catalogoPresupuestalService, presupuestoService } from "@/services";
 import type { CatalogoPresupuestalNodoDto, PresupuestoDto } from "@/core";
@@ -159,12 +158,6 @@ export default function PresupuestoIngresosPage() {
             >
               <Landmark size={15} /> Nuevo ingreso
             </button>
-            <Link
-              href="/dashboard/presupuesto/gastos/nuevo"
-              className="flex items-center gap-2 px-5 py-2.5 bg-white text-rose-600 border border-rose-200 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-rose-50 hover:border-rose-300 transition-all shadow-sm"
-            >
-              <Receipt size={15} /> Nuevo gasto
-            </Link>
             <button
               onClick={() => setModalModificacion(true)}
               className="flex items-center gap-2 px-5 py-2.5 bg-white text-amber-700 border border-amber-200 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-amber-50 hover:border-amber-300 transition-all shadow-sm"

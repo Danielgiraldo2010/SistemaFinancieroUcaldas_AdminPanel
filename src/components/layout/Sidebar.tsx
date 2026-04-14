@@ -12,8 +12,10 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { canViewDashboardSection } from "@/lib";
 import { dashboardMenu } from "@/config/dashboard-navigation";
 import { cn } from "@/lib/utils/cn";
+import { useAuthStore } from "@/store";
 
 const isPathActive = (pathname: string, path: string) =>
   pathname === path || pathname.startsWith(`${path}/`);
@@ -38,6 +40,7 @@ const getInitialExpandedSections = (pathname: string) =>
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const user = useAuthStore((state) => state.user);
   const [collapsed, setCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(
@@ -56,11 +59,14 @@ export function Sidebar() {
     }
   };
 
-  const visibleExpandedSections = dashboardMenu.reduce<Record<string, boolean>>(
+  const filteredMenu = dashboardMenu.filter((section) =>
+    canViewDashboardSection(section.name, user?.roleName),
+  );
+
+  const visibleExpandedSections = filteredMenu.reduce<Record<string, boolean>>(
     (acc, section) => {
       if (section.items?.length) {
-        acc[section.name] =
-          expandedSections[section.name] || isSectionActive(pathname, section);
+        acc[section.name] = !!expandedSections[section.name];
       }
       return acc;
     },
@@ -94,15 +100,6 @@ export function Sidebar() {
 
   const toggleSection = (sectionName: string) => {
     if (collapsed) setCollapsed(false);
-
-    // Si la sección tiene subitems, navegar directo al primero
-    const section = dashboardMenu.find((s) => s.name === sectionName);
-    if (section?.items?.length) {
-      const firstPath = section.items[0].path;
-      setExpandedSections((current) => ({ ...current, [sectionName]: true }));
-      if (pathname !== firstPath) router.push(firstPath);
-      return;
-    }
 
     setExpandedSections((current) => ({
       ...current,
@@ -178,7 +175,7 @@ export function Sidebar() {
               ref={mobileNavRef}
               className="flex-1 overflow-y-auto no-scrollbar px-8 space-y-5 pb-20"
             >
-              {dashboardMenu.map((section) => {
+              {filteredMenu.map((section) => {
                 const hasChildren = Boolean(section.items?.length);
                 const sectionActive = isSectionActive(pathname, section);
                 const sectionExpanded = visibleExpandedSections[section.name];
@@ -322,7 +319,7 @@ export function Sidebar() {
             ref={desktopNavRef}
             className="flex-1 overflow-y-auto py-6 px-4 space-y-3 no-scrollbar nav-mask"
           >
-            {dashboardMenu.map((section) => {
+            {filteredMenu.map((section) => {
               const hasChildren = Boolean(section.items?.length);
               const sectionActive = isSectionActive(pathname, section);
               const sectionExpanded = visibleExpandedSections[section.name];

@@ -2,12 +2,12 @@
   "catalogo_presupuestal": [
     {
       "codigo": "12010",
-      "nombre": "Unidad Ejecutora Facultad IA e Ingenierías",
+      "nombre": "Unidad Ejecutora Facultad de Ingenierías e Inteligencia Artificial",
       "tipo": "ingreso",
       "nivel": 1,
       "padre": null,
       "permite_movimiento": false,
-      "unidad_ejecutora": "Facultad IA e Ingenierías",
+      "unidad_ejecutora": "Facultad de Ingenierías e Inteligencia Artificial",
       "apropiacion_inicial": 0,
       "presupuesto_vigente": 0,
       "children": [
@@ -18,7 +18,7 @@
           "nivel": 2,
           "padre": "12010",
           "permite_movimiento": false,
-          "unidad_ejecutora": "Facultad IA e Ingenierías",
+          "unidad_ejecutora": "Facultad de Ingenierías e Inteligencia Artificial",
           "apropiacion_inicial": 0,
           "presupuesto_vigente": 0,
           "children": [
@@ -29,7 +29,7 @@
               "nivel": 3,
               "padre": "1201001",
               "permite_movimiento": false,
-              "unidad_ejecutora": "Facultad IA e Ingenierías",
+              "unidad_ejecutora": "Facultad de Ingenierías e Inteligencia Artificial",
               "apropiacion_inicial": 0,
               "presupuesto_vigente": 0,
               "children": [
@@ -40,7 +40,7 @@
                   "nivel": 4,
                   "padre": "120100102",
                   "permite_movimiento": false,
-                  "unidad_ejecutora": "Facultad IA e Ingenierías",
+                  "unidad_ejecutora": "Facultad de Ingenierías e Inteligencia Artificial",
                   "apropiacion_inicial": 0,
                   "presupuesto_vigente": 0,
                   "children": [
