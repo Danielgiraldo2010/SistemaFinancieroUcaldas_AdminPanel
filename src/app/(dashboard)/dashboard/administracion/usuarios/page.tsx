@@ -216,7 +216,7 @@ export default function AdminUsuariosPage() {
             : "Registrar usuario real en la base y asignarle un rol institucional"
         }
       >
-        <div className="space-y-4">
+        <div className="tour-usuarios-form space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {fieldConfigs
               .filter(({ key }) => !editingUser || key !== "password")
@@ -279,7 +279,7 @@ export default function AdminUsuariosPage() {
             <button
               onClick={handleSave}
               disabled={saving || !form.fullName || !form.email || (!editingUser && !form.password)}
-              className="px-6 py-2.5 bg-[#00284d] text-[#d5bb87] rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#003e70] transition-all disabled:opacity-50"
+              className="tour-usuarios-guardar px-6 py-2.5 bg-[#00284d] text-[#d5bb87] rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#003e70] transition-all disabled:opacity-50"
             >
               {saving ? "Guardando..." : editingUser ? "Modificar usuario" : "Crear usuario"}
             </button>
@@ -288,7 +288,7 @@ export default function AdminUsuariosPage() {
                 setModalOpen(false);
                 setEditingUser(null);
               }}
-              className="px-6 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+              className="tour-usuarios-cancelar px-6 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
             >
               Cancelar
             </button>
@@ -315,7 +315,7 @@ export default function AdminUsuariosPage() {
             </div>
             <button
               onClick={openCreate}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#00284d] text-[#d5bb87] rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#003e70] transition-all shadow-md"
+              className="tour-usuarios-nuevo flex items-center gap-2 px-5 py-2.5 bg-[#00284d] text-[#d5bb87] rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#003e70] transition-all shadow-md"
             >
               <UserPlus size={15} /> Nuevo usuario
             </button>

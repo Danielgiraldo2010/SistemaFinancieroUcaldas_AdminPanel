@@ -21,6 +21,8 @@ type FormState = {
   vigente: boolean;
 };
 
+type FormInputKey = "numero" | "titulo" | "fecha" | "enlace";
+
 const inicial: Acuerdo[] = [
   { id: 1, numero: "Acuerdo 001-2020", titulo: "Estatuto General de Presupuesto Universitario",          fecha: "2020-03-15", enlace: "https://ucaldas.edu.co/docs/acuerdo-001-2020.pdf", vigente: true  },
   { id: 2, numero: "Acuerdo 012-2021", titulo: "Reglamento de Modificaciones Presupuestales",            fecha: "2021-06-10", enlace: "https://ucaldas.edu.co/docs/acuerdo-012-2021.pdf", vigente: true  },
@@ -69,17 +71,17 @@ export default function NormatividadAcuerdosPage() {
         </div>
         <button
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#00284d] text-[#d5bb87] rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#003e70] transition-all shadow-sm"
+          className="tour-acuerdos-nuevo flex items-center gap-2 px-4 py-2 bg-[#00284d] text-[#d5bb87] rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#003e70] transition-all shadow-sm"
         >
           <Plus size={14} /> Nuevo acuerdo
         </button>
       </div>
 
       {showForm && (
-        <div className="bg-white rounded-2xl border border-[#d5bb87]/40 shadow-sm p-6 space-y-4">
+        <div className="tour-acuerdos-form bg-white rounded-2xl border border-[#d5bb87]/40 shadow-sm p-6 space-y-4">
           <div className="flex justify-between items-center">
             <span className="text-xs font-black uppercase tracking-widest text-[#00284d]">Nuevo Acuerdo</span>
-            <button onClick={() => setShowForm(false)}><X size={16} className="text-slate-400" /></button>
+            <button className="tour-acuerdos-cerrar" onClick={() => setShowForm(false)}><X size={16} className="text-slate-400" /></button>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
@@ -107,18 +109,18 @@ export default function NormatividadAcuerdosPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
-              { label: "N° Acuerdo", key: "numero",  type: "text" },
-              { label: "Fecha",      key: "fecha",   type: "date" },
-              { label: "Título",     key: "titulo",  type: "text" },
+              { label: "N° Acuerdo", key: "numero" as FormInputKey, type: "text" },
+              { label: "Fecha", key: "fecha" as FormInputKey, type: "date" },
+              { label: "Título", key: "titulo" as FormInputKey, type: "text" },
               ...(modoCarga === "manual"
-                ? [{ label: "Enlace URL", key: "enlace", type: "url" }]
+                ? [{ label: "Enlace URL", key: "enlace" as FormInputKey, type: "url" }]
                 : []),
             ].map(({ label, key, type }) => (
               <div key={key} className="flex flex-col gap-1">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</label>
                 <input
                   type={type}
-                  value={form[key as keyof FormState]}
+                  value={form[key]}
                   onChange={(e) =>
                     setForm((current) => ({
                       ...current,
@@ -160,7 +162,7 @@ export default function NormatividadAcuerdosPage() {
               {form.vigente ? "Sí" : "No"}
             </button>
           </div>
-          <button onClick={agregar} className="px-5 py-2 bg-[#00284d] text-[#d5bb87] rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#003e70] transition-all">
+          <button onClick={agregar} className="tour-acuerdos-guardar px-5 py-2 bg-[#00284d] text-[#d5bb87] rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#003e70] transition-all">
             Guardar
           </button>
         </div>
