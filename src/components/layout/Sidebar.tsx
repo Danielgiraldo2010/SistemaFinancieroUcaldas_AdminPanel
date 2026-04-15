@@ -37,7 +37,20 @@ const getInitialExpandedSections = (pathname: string) =>
     return acc;
   }, {});
 
-export function Sidebar() {
+const toMenuSlug = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+type SidebarProps = {
+  guidedOpenSections?: string[];
+  forceExpandSignal?: number;
+};
+
+export function Sidebar({ guidedOpenSections = [], forceExpandSignal = 0 }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
@@ -89,6 +102,36 @@ export function Sidebar() {
     };
   }, [isMobileOpen, collapsed, pathname, visibleExpandedSections]);
 
+  useEffect(() => {
+    if (!guidedOpenSections.length) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      setExpandedSections((current) => {
+        const nextState = { ...current };
+        for (const sectionName of guidedOpenSections) {
+          nextState[sectionName] = true;
+        }
+        return nextState;
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [guidedOpenSections]);
+
+  useEffect(() => {
+    if (!forceExpandSignal) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      setCollapsed(false);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [forceExpandSignal]);
+
   const handleNavigation = (path: string) => {
     if (path === pathname) {
       setIsMobileOpen(false);
@@ -129,7 +172,7 @@ export function Sidebar() {
 
       <button
         onClick={() => setIsMobileOpen(true)}
-        className="lg:hidden fixed top-5 left-5 z-[60] p-3 bg-[#00284d]/90 text-[#d5bb87] rounded-full border border-[#d5bb87]/30 shadow-2xl"
+        className="tour-sidebar-mobile-toggle lg:hidden fixed top-5 left-5 z-[60] p-3 bg-[#00284d]/90 text-[#d5bb87] rounded-full border border-[#d5bb87]/30 shadow-2xl"
       >
         <Menu size={24} />
       </button>
@@ -187,6 +230,7 @@ export function Sidebar() {
                         <button
                           onClick={() => toggleSection(section.name)}
                           className={cn(
+                            `menu-${toMenuSlug(section.name)}`,
                             "w-full flex items-center justify-between gap-4 p-5 rounded-2xl border transition-colors",
                             sectionActive
                               ? "bg-[#d5bb87]/20 border-[#d5bb87]/30 text-[#d5bb87]"
@@ -224,6 +268,7 @@ export function Sidebar() {
                                       key={item.path}
                                       onClick={() => handleNavigation(item.path)}
                                       className={cn(
+                                        `submenu-${toMenuSlug(section.name)}-${toMenuSlug(item.name)}`,
                                         "flex items-center gap-4 p-4 rounded-2xl border border-transparent text-left transition-colors",
                                         isActive
                                           ? "bg-[#d5bb87]/20 border-[#d5bb87]/30 text-[#d5bb87]"
@@ -246,6 +291,7 @@ export function Sidebar() {
                       <button
                         onClick={() => handleNavigation(section.path!)}
                         className={cn(
+                          `menu-${toMenuSlug(section.name)}`,
                           "w-full flex items-center gap-4 p-5 rounded-2xl border transition-colors",
                           sectionActive
                             ? "bg-[#d5bb87]/20 border-[#d5bb87]/30 text-[#d5bb87]"
@@ -268,6 +314,7 @@ export function Sidebar() {
 
       <aside
         className={cn(
+          "tour-sidebar",
           "hidden lg:flex h-screen sticky top-0 transition-all duration-300 flex-col z-50 border-r border-[#003e70]",
           collapsed ? "w-20" : "w-72",
         )}
@@ -308,7 +355,7 @@ export function Sidebar() {
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-2 rounded-lg text-[#d5bb87] hover:bg-[#003e70]"
+            className="tour-sidebar-collapse p-2 rounded-lg text-[#d5bb87] hover:bg-[#003e70]"
           >
             {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
           </button>
@@ -331,6 +378,7 @@ export function Sidebar() {
                       <button
                         onClick={() => toggleSection(section.name)}
                         className={cn(
+                          `menu-${toMenuSlug(section.name)}`,
                           "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative",
                           sectionActive
                             ? "bg-[#003e70] text-[#d5bb87] border border-[#d5bb87]/20 shadow-lg"
@@ -383,6 +431,7 @@ export function Sidebar() {
                                       key={item.path}
                                       href={item.path}
                                       className={cn(
+                                        `submenu-${toMenuSlug(section.name)}-${toMenuSlug(item.name)}`,
                                         "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative",
                                         isActive
                                           ? "bg-[#003e70] text-[#d5bb87] border border-[#d5bb87]/20 shadow-lg"
@@ -416,6 +465,7 @@ export function Sidebar() {
                     <Link
                       href={section.path!}
                       className={cn(
+                        `menu-${toMenuSlug(section.name)}`,
                         "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative",
                         sectionActive
                           ? "bg-[#003e70] text-[#d5bb87] border border-[#d5bb87]/20 shadow-lg"

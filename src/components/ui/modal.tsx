@@ -66,7 +66,7 @@ export function Modal({ open, onClose, title, subtitle, children }: ModalProps) 
                 </div>
                 <button
                   onClick={onClose}
-                  className="p-1.5 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                  className="tour-modal-close p-1.5 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
                 >
                   <X size={18} />
                 </button>

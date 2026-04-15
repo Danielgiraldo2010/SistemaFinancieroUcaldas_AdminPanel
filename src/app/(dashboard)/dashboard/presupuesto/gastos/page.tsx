@@ -50,7 +50,7 @@ export default function PresupuestoGastosPage() {
       <div className="flex flex-wrap gap-3">
         <Link
           href="/dashboard/presupuesto/gastos/nuevo"
-          className="flex items-center gap-2 px-5 py-2.5 bg-[#00284d] text-[#d5bb87] rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#003e70] transition-all shadow-md"
+          className="tour-gastos-nuevo flex items-center gap-2 px-5 py-2.5 bg-[#00284d] text-[#d5bb87] rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#003e70] transition-all shadow-md"
         >
           <Receipt size={15} /> Nuevo gasto
         </Link>

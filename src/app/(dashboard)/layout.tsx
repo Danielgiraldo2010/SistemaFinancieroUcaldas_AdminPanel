@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AuthGuard } from "@/guards";
 import { Sidebar } from "@/components/layout";
+import { AdminGuidedTour } from "@/components/layout/AdminGuidedTour";
 import { getDashboardRouteMeta } from "@/config/dashboard-navigation";
 import { findStoredRole, getBestUserDisplayName, getRoleDisplayName } from "@/lib";
 import { useAuthStore } from "@/store";
@@ -13,6 +14,7 @@ import { cn } from "@/lib/utils/cn";
 import Link from "next/link";
 import Image from "next/image";
 import LogoAmarillo from "../../../public/images/Logo_Amarillo.png";
+import { useCallback } from "react";
 
 export default function DashboardLayout({
   children,
@@ -23,6 +25,8 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const { logout, user } = useAuthStore();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [tourOpenSections, setTourOpenSections] = useState<string[]>([]);
+  const [sidebarExpandSignal, setSidebarExpandSignal] = useState(0);
 
   const currentRoute = getDashboardRouteMeta(pathname);
   const resolvedRole = findStoredRole({ userId: user?.id, email: user?.email }) ?? user?.roleName;
@@ -38,10 +42,21 @@ export default function DashboardLayout({
     router.push("/login");
   };
 
+  const handleOpenTourSections = useCallback((sections: string[]) => {
+    setTourOpenSections(sections);
+  }, []);
+
+  const handleForceExpandSidebar = useCallback(() => {
+    setSidebarExpandSignal((current) => current + 1);
+  }, []);
+
   return (
     <AuthGuard>
-      <div className="flex min-h-screen bg-[#f8fafc]">
-        <Sidebar />
+      <div className="tour-layout-shell flex min-h-screen bg-[#f8fafc]">
+        <Sidebar
+          guidedOpenSections={tourOpenSections}
+          forceExpandSignal={sidebarExpandSignal}
+        />
 
         <div className="flex flex-col flex-1 w-full min-w-0">
           {/* HEADER DINÁMICO CON LOGO AMARILLO */}
@@ -89,7 +104,7 @@ export default function DashboardLayout({
               <div className="relative">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center gap-3 group transition-all"
+                  className="tour-profile-trigger flex items-center gap-3 group transition-all"
                 >
                   <Link
                     href="/dashboard"
@@ -167,6 +182,10 @@ export default function DashboardLayout({
             {children}
           </main>
         </div>
+        <AdminGuidedTour
+          onOpenSections={handleOpenTourSections}
+          onForceExpandSidebar={handleForceExpandSidebar}
+        />
       </div>
     </AuthGuard>
   );
