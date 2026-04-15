@@ -1,10 +1,15 @@
-import { apiClient, findStoredRole, getBestUserDisplayName } from '@/lib';
+import {
+  apiClient,
+  findStoredRole,
+  getBestUserDisplayName,
+  tokenManager,
+} from "@/lib";
 import {
   createMockUser,
   getMockAuditLogs,
   updateMockTwoFactor,
-} from '@/lib/dashboard-mocks';
-import { endpoints } from '@/config';
+} from "@/lib/dashboard-mocks";
+import { endpoints } from "@/config";
 import type {
   IAuthRepository,
   LoginCommand,
@@ -15,7 +20,7 @@ import type {
   RegisterCommand,
   RegisterResponse,
   AuditLogDto,
-} from '@/core';
+} from "@/core";
 
 type AccessTokenApiResponse = {
   accessToken?: string;
@@ -36,6 +41,13 @@ class AuthService implements IAuthRepository {
       data,
     );
 
+    if (response.accessToken) {
+      tokenManager.setTokens(
+        response.accessToken,
+        response.refreshToken ?? undefined,
+      );
+    }
+
     const user = await this.getCurrentUser(data.email);
 
     return {
@@ -43,21 +55,26 @@ class AuthService implements IAuthRepository {
       token: response.accessToken ?? null,
       refreshToken: response.refreshToken ?? null,
       user,
-      message: response.accessToken ? null : 'No se recibió token de acceso.',
+      message: response.accessToken ? null : "No se recibió token de acceso.",
     };
   }
 
-  async verify2fa(data: ValidateTwoFactorCommand): Promise<ValidateTwoFactorResponse> {
-    const response = await apiClient.post<AccessTokenApiResponse>(endpoints.auth.verify2fa, {
-      twoFactorCode: data.code,
-    });
+  async verify2fa(
+    data: ValidateTwoFactorCommand,
+  ): Promise<ValidateTwoFactorResponse> {
+    const response = await apiClient.post<AccessTokenApiResponse>(
+      endpoints.auth.verify2fa,
+      {
+        twoFactorCode: data.code,
+      },
+    );
 
     return {
       success: !!response.accessToken,
       token: response.accessToken ?? null,
       refreshToken: response.refreshToken ?? null,
       user: await this.getCurrentUser(),
-      message: response.accessToken ? null : 'No se recibió token de acceso.',
+      message: response.accessToken ? null : "No se recibió token de acceso.",
     };
   }
 
@@ -70,12 +87,12 @@ class AuthService implements IAuthRepository {
       await apiClient.post(endpoints.auth.register, {
         email: data.email,
         password: data.password,
-        fullName: data.userName ?? data.email ?? 'Usuario',
+        fullName: data.userName ?? data.email ?? "Usuario",
       });
 
       return {
         success: true,
-        message: 'Usuario registrado correctamente.',
+        message: "Usuario registrado correctamente.",
       };
     } catch {
       return createMockUser(data);
@@ -94,24 +111,35 @@ class AuthService implements IAuthRepository {
     }
   }
 
-  async getUserAuditLogs(userId: string, params?: Record<string, unknown>): Promise<AuditLogDto[]> {
+  async getUserAuditLogs(
+    userId: string,
+    params?: Record<string, unknown>,
+  ): Promise<AuditLogDto[]> {
     return apiClient.get(endpoints.auth.userAuditLogs(userId), params);
   }
 
-  async enable2fa(data: { email: string; password: string; enable: boolean }): Promise<void> {
+  async enable2fa(data: {
+    email: string;
+    password: string;
+    enable: boolean;
+  }): Promise<void> {
     try {
-      return await apiClient.post(endpoints.auth.enable2fa, { enable: data.enable });
+      return await apiClient.post(endpoints.auth.enable2fa, {
+        enable: data.enable,
+      });
     } catch {
       return updateMockTwoFactor(data.email, data.enable);
     }
   }
 
-  async getCurrentUser(fallbackEmail?: string): Promise<LoginResponse['user']> {
+  async getCurrentUser(fallbackEmail?: string): Promise<LoginResponse["user"]> {
     try {
       const info = await apiClient.get<InfoApiResponse>(endpoints.auth.info);
       return {
         email: info.email ?? fallbackEmail ?? undefined,
-        userName: getBestUserDisplayName({ email: info.email ?? fallbackEmail }),
+        userName: getBestUserDisplayName({
+          email: info.email ?? fallbackEmail,
+        }),
         roleName: findStoredRole({ email: info.email ?? fallbackEmail }),
       };
     } catch {
